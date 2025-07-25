@@ -1,0 +1,6 @@
+$argon2id$v=19$m=65536,t=4,p=1$WE54bE5GQk56QkdRUUhYUg$kdUDQw0KCQV9Yisf5w+nbALwBb9vaVsbHq7Va+zDR30 dkzo5713
+$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink 5713
+
+prueba@toplabel.com.mx
+
+php -r 'echo password_hash("", PASSWORD_ARGON2ID) . PHP_EOL;'

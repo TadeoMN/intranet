@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# Fuerza HTTPS (opcional)
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Deja pasar archivos reales y dirs
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Todo lo demás → Front-Controller
+RewriteRule ^ index.php [L]

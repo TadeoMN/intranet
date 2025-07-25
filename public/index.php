@@ -5,8 +5,15 @@
   
   date_default_timezone_set('America/Mexico_City');
 
+  // Start performance monitoring / Iniciar monitoreo de rendimiento
+  $startTime = microtime(true);
+
   require_once dirname(__DIR__).'/vendor/autoload.php';
   require_once dirname(__DIR__).'/core/Helpers.php';
+
+  // Initialize performance monitoring / Inicializar monitoreo de rendimiento
+  use Core\Performance;
+  Performance::startTimer('app_bootstrap');
 
   // --- Sesión segura ---------------------------------
   $c = config('session');
@@ -21,9 +28,11 @@
   ]);
 
   session_start();
+  Performance::endTimer('app_bootstrap');
 
   // --- Router + rutas --------------------------------
   use Core\Router; 
+  Performance::startTimer('routing');
 
   $router = new Router;
   $router->get('/',          'AuthController@showLogin');
@@ -37,4 +46,13 @@
   $router->post('/employees/update/{id}', 'EmployeeController@updateEmployee');
   $router->post('/employees/delete/{id}', 'EmployeeController@deleteEmployee');
   
-  $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+  Performance::endTimer('routing');
+  Performance::startTimer('controller_execution');
+  
+  $output = $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+  
+  Performance::endTimer('controller_execution');
+  
+  // Add performance headers and output / Agregar headers de rendimiento y salida
+  Performance::addPerformanceHeaders();
+  echo $output;

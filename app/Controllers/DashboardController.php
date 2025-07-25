@@ -1,10 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Permission;
-use App\Models\UserSession;
+use App\Services\DashboardService;
 use function view, redirect;
 
 class DashboardController {
@@ -14,13 +11,13 @@ class DashboardController {
             return redirect('/');
         }
 
-        $users       = User::all();              // solo activos
-        $roles       = Role::all();              // siempre visibles
-        $permissions = Permission::all();        // idem
-
-        $session     = UserSession::activeUser($_SESSION['uid'] ?? 0);
-        $active   = UserSession::activeForUser();
-        $history  = UserSession::historyForUser();
+        // Use optimized dashboard service instead of multiple separate queries
+        // Usar servicio de dashboard optimizado en lugar de múltiples consultas separadas
+        $dashboardData = DashboardService::getDashboardData($_SESSION['uid'] ?? 0);
+        
+        // Extract data for backward compatibility with existing view
+        // Extraer datos para compatibilidad con la vista existente
+        extract($dashboardData);
 
         return view('dashboard/dashboard', compact('users', 'roles', 'permissions', 'active', 'history', 'session'));
     }

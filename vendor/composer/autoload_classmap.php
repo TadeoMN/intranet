@@ -6,20 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'App\\Controllers\\AuthController' => $baseDir . '/app/Controllers/AuthController.php',
-    'App\\Controllers\\DashboardController' => $baseDir . '/app/Controllers/DashboardController.php',
-    'App\\Controllers\\EmployeeController' => $baseDir . '/app/Controllers/EmployeeController.php',
-    'App\\Controllers\\SessionController' => $baseDir . '/app/Controllers/SessionController.php',
-    'App\\Models\\Employee' => $baseDir . '/app/Models/Employee.php',
-    'App\\Models\\Model' => $baseDir . '/app/Models/Model.php',
-    'App\\Models\\Permission' => $baseDir . '/app/Models/Permission.php',
-    'App\\Models\\Role' => $baseDir . '/app/Models/Role.php',
-    'App\\Models\\RolePermission' => $baseDir . '/app/Models/RolePermission.php',
-    'App\\Models\\User' => $baseDir . '/app/Models/User.php',
-    'App\\Models\\UserRole' => $baseDir . '/app/Models/UserRole.php',
-    'App\\Models\\UserSession' => $baseDir . '/app/Models/UserSession.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
-    'Core\\Auth' => $baseDir . '/core/Auth.php',
-    'Core\\Database' => $baseDir . '/core/Database.php',
-    'Core\\Router' => $baseDir . '/core/Router.php',
 );

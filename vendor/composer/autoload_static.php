@@ -29,22 +29,7 @@ class ComposerStaticInit15f9a93dc51294685918a9ed6b4e047d
     );
 
     public static $classMap = array (
-        'App\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Controllers/AuthController.php',
-        'App\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/app/Controllers/DashboardController.php',
-        'App\\Controllers\\EmployeeController' => __DIR__ . '/../..' . '/app/Controllers/EmployeeController.php',
-        'App\\Controllers\\SessionController' => __DIR__ . '/../..' . '/app/Controllers/SessionController.php',
-        'App\\Models\\Employee' => __DIR__ . '/../..' . '/app/Models/Employee.php',
-        'App\\Models\\Model' => __DIR__ . '/../..' . '/app/Models/Model.php',
-        'App\\Models\\Permission' => __DIR__ . '/../..' . '/app/Models/Permission.php',
-        'App\\Models\\Role' => __DIR__ . '/../..' . '/app/Models/Role.php',
-        'App\\Models\\RolePermission' => __DIR__ . '/../..' . '/app/Models/RolePermission.php',
-        'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
-        'App\\Models\\UserRole' => __DIR__ . '/../..' . '/app/Models/UserRole.php',
-        'App\\Models\\UserSession' => __DIR__ . '/../..' . '/app/Models/UserSession.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Core\\Auth' => __DIR__ . '/../..' . '/core/Auth.php',
-        'Core\\Database' => __DIR__ . '/../..' . '/core/Database.php',
-        'Core\\Router' => __DIR__ . '/../..' . '/core/Router.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

@@ -14,7 +14,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Crear la base de datos si no existe
-CREATE DATABASE IF NOT EXISTS intranet_tl DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS intranet_tl DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE intranet_tl;
 
 /* ---------------------------------------------------------------------
@@ -64,7 +64,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id_user INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name_user VARCHAR(50) COLLATE utf8mb4_bin NOT NULL UNIQUE,
-  password_hash_user CHAR(97) NOT NULL,
+  password_hash_user VARCHAR(255) NOT NULL,
   status_user ENUM('ACTIVO', 'INACTIVO', 'BLOQUEADO') DEFAULT 'ACTIVO',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -95,7 +95,7 @@ CREATE TABLE user_sessions (
   logout_at DATETIME,
   is_active TINYINT(1) DEFAULT 1,
   UNIQUE KEY uq_active_session (id_user_session_fk, is_active),
-  FOREIGN KEY (id_user_session_fk) REFERENCES users(id_user)
+  FOREIGN KEY (id_user_session_fk) REFERENCES users(id_user) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Historial de sesiones (guarda todo)
@@ -235,8 +235,10 @@ CREATE TABLE employee (
   seniority_employee DECIMAL(4,2) NULL,
   id_user_fk INT UNSIGNED NOT NULL,
   id_position_fk INT UNSIGNED NOT NULL,
-  FOREIGN KEY (id_user_fk) REFERENCES users(id_user),
-  FOREIGN KEY (id_position_fk) REFERENCES positions(id_position)
+  FOREIGN KEY (id_user_fk) REFERENCES users(id_user) ON DELETE RESTRICT,
+  FOREIGN KEY (id_position_fk) REFERENCES positions(id_position) ON DELETE RESTRICT,
+  CONSTRAINT chk_employee_hired CHECK (date_hired <= CURDATE()),
+  CONSTRAINT chk_employee_seniority CHECK (seniority_employee >= 0 AND seniority_employee <= 99.9)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE department
@@ -275,7 +277,7 @@ CREATE TABLE employee_profile (
   emergency_contact_employee_profile VARCHAR(100),
   emergency_phone_employee_profile VARCHAR(20),
   emergency_relationship_employee_profile VARCHAR(50),
-  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee)
+  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Historial de posiciones del empleado
@@ -312,9 +314,10 @@ CREATE TABLE contracts (
   termination_reason_contract TEXT,
   is_active TINYINT(1) DEFAULT 1,
   UNIQUE KEY uq_active_contract (id_employee_fk, is_active),
-  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee),
-  FOREIGN KEY (id_contract_type_fk) REFERENCES contract_type(id_contract_type),
-  FOREIGN KEY (id_payroll_scheme_fk) REFERENCES payroll_scheme(id_payroll_scheme)
+  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE RESTRICT,
+  FOREIGN KEY (id_contract_type_fk) REFERENCES contract_type(id_contract_type) ON DELETE RESTRICT,
+  FOREIGN KEY (id_payroll_scheme_fk) REFERENCES payroll_scheme(id_payroll_scheme) ON DELETE RESTRICT,
+  CONSTRAINT chk_salary_contract CHECK (salary_contract >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DELIMITER //
@@ -347,10 +350,10 @@ CREATE TABLE leave_request (
   requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   approved_by INT UNSIGNED,
   approved_at TIMESTAMP NULL,
-  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee),
-  FOREIGN KEY (id_leave_type_fk) REFERENCES leave_type(id_leave_type),
-  FOREIGN KEY (requested_by) REFERENCES employee(id_employee),
-  FOREIGN KEY (approved_by) REFERENCES employee(id_employee)
+  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE RESTRICT,
+  FOREIGN KEY (id_leave_type_fk) REFERENCES leave_type(id_leave_type) ON DELETE RESTRICT,
+  FOREIGN KEY (requested_by) REFERENCES employee(id_employee) ON DELETE RESTRICT,
+  FOREIGN KEY (approved_by) REFERENCES employee(id_employee) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------
@@ -367,11 +370,14 @@ CREATE TABLE incident (
   date_incident DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   observation_incident TEXT,
   appeal_incident TEXT,
+  severity_incident ENUM('BAJA', 'MEDIA', 'ALTA', 'CRITICA') DEFAULT 'MEDIA',
   reported_by INT UNSIGNED NOT NULL,
   reported_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_incident_type_fk) REFERENCES incident_type(id_incident_type),
-  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee),
-  FOREIGN KEY (reported_by) REFERENCES employee(id_employee)
+  FOREIGN KEY (id_incident_type_fk) REFERENCES incident_type(id_incident_type) ON DELETE RESTRICT,
+  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE RESTRICT,
+  FOREIGN KEY (reported_by) REFERENCES employee(id_employee) ON DELETE RESTRICT,
+  CONSTRAINT chk_date_incident CHECK (date_incident <= NOW()),
+  CONSTRAINT chk_reported_at_incident CHECK (reported_at <= NOW())
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -381,12 +387,12 @@ INSERT INTO `users` (`name_user`, `password_hash_user`, `status_user`) VALUES
 ('e.sanchez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
 ('n.perez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
 ('t.mejia', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('m.flores', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO')
+('m.flores', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
 ('j.perez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
 ('t.juarez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO');
 
 INSERT INTO `department` (`name_department`, `id_manager_employee_fk`) VALUES
-('DIRECCION' NULL),
+('DIRECCION', NULL),
 ('RECURSOS HUMANOS', NULL),
 ('DISEÑO', NULL),
 ('VENTAS', NULL),
@@ -405,13 +411,13 @@ INSERT INTO `level_position` (`name_level_position`, `description_level_position
 INSERT INTO `positions` (`name_position`, `id_level_position_fk`, `id_departament_fk`) VALUES
 ('DIRECTOR GENERAL',5,1),
 ('GERENTE',4,2),
-('AUXILIAR',1,2,),
+('AUXILIAR',1,2),
 ('GERENTE',4,3),
 ('DISEÑADOR',1,3),
 ('GERENTE',4,4),
-('EJECUTIVO',1.4),
+('EJECUTIVO',1,4),
 ('GERENTE',4,5),
-('TECNICO',1.5),
+('TECNICO',1,5),
 ('GERENTE',4,6),
 ('AUDITOR',2,6),
 ('AUXILIAR',2,6);
@@ -422,9 +428,59 @@ INSERT INTO `employee` (`code_employee`, `name_employee`, `date_hired`, `type_em
 ('TL-0003', 'SANCHEZ ZEPEDA EMMANUEL', '2017-06-01', 'ADMINISTRATIVO', 3, 4),
 ('TL-0004', 'PEREZ MORALES NORMA ANGELICA', '2018-01-15', 'ADMINISTRATIVO', 4, 6),
 ('TL-0005', 'MEJIA NIEVES JESUS TADEO', '2025-05-08', 'ADMINISTRATIVO', 5, 8),
-('TL-0006', 'FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 6, 10)
-(,'TL-0007', 'PEREZ GARCIA JOSE LUIS', '2025-04-01', 'ADMINISTRATIVO', 7, 11),
+('TL-0006', 'FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 6, 10),
+('TL-0007', 'PEREZ GARCIA JOSE LUIS', '2025-04-01', 'ADMINISTRATIVO', 7, 11),
 ('TL-0008', 'JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 8, 12);
+
+-- Insertar roles básicos del sistema
+INSERT INTO `roles` (`name_role`) VALUES
+('ADMINISTRADOR'),
+('GERENTE_RH'),
+('SUPERVISOR'),
+('EMPLEADO');
+
+-- Insertar permisos básicos
+INSERT INTO `permissions` (`code_permission`, `description_permission`) VALUES
+('user_create', 'Crear nuevos usuarios'),
+('user_edit', 'Editar información de usuarios'),
+('user_delete', 'Eliminar usuarios'),
+('employee_create', 'Crear registros de empleados'),
+('employee_edit', 'Editar información de empleados'),
+('employee_view_all', 'Ver información de todos los empleados'),
+('contract_manage', 'Gestionar contratos de empleados'),
+('leave_approve', 'Aprobar solicitudes de permisos'),
+('incident_manage', 'Gestionar incidencias'),
+('reports_generate', 'Generar reportes del sistema');
+
+-- Insertar tipos de contrato
+INSERT INTO `contract_type` (`name_contract_type`) VALUES
+('INDEFINIDO'),
+('TEMPORAL'),
+('POR_PROYECTO'),
+('PRACTICAS');
+
+-- Insertar esquemas de nómina
+INSERT INTO `payroll_scheme` (`name_payroll_scheme`, `frequency_payroll_scheme`) VALUES
+('NOMINA_EMPLEADOS', 'SEMANAL'),
+('NOMINA_EMPLEADOS', 'QUINCENAL'),
+('HONORARIOS_ASIMILADOS', 'MENSUAL'),
+('SALARIO_EJECUTIVOS', 'MENSUAL');
+
+-- Insertar tipos de licencia
+INSERT INTO `leave_type` (`code_leave_type`, `name_leave_type`, `description_leave_type`, `auto_deduct_days`, `max_days_leave_type`) VALUES
+('VAC', 'VACACIONES', 'Días de vacaciones anuales', 1, 365),
+('ENF', 'ENFERMEDAD', 'Licencia por enfermedad', 0, 30),
+('MAT', 'MATERNIDAD', 'Licencia de maternidad', 0, 84),
+('PAT', 'PATERNIDAD', 'Licencia de paternidad', 0, 5),
+('PER', 'PERSONAL', 'Permiso personal', 1, 3);
+
+-- Insertar tipos de incidencia
+INSERT INTO `incident_type` (`name_incident_type`, `description_incident_type`) VALUES
+('RETRASO', 'Llegada tardía al trabajo'),
+('FALTA', 'Ausencia no justificada'),
+('ACCIDENTE', 'Accidente laboral'),
+('COMPORTAMIENTO', 'Problema de comportamiento'),
+('RENDIMIENTO', 'Bajo rendimiento laboral');
 
 SELECT *
 FROM employee

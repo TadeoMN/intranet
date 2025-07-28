@@ -1,24 +1,24 @@
 <?php
 
 /* ------------ configuración ------------- */
-function config(string $path){
+function config(string $path) {
     static $cfg=null;
     if(!$cfg) $cfg = require __DIR__.'/../config/config.php';
     return array_reduce(explode('.',$path), fn($a,$b)=>$a[$b]??null, $cfg);
 }
 
 /* ------------ vistas / redirects --------- */
-function view(string $path,array $vars=[]){
+function view(string $path,array $vars=[]) {
     extract($vars, EXTR_SKIP);
     ob_start();
     require __DIR__."/../app/Views/$path.php";
     return ob_get_clean();
 }
 
-function redirect(string $url){ header("Location: $url"); exit; }
+function redirect(string $url) { header("Location: $url"); exit; }
 
 /* ------------ mensajes flash ------------- */
-function flash(string $type=null,string $title=null,string $text=''){
+function flash(string $type=null,string $title=null,string $text='') {
     if($type===null){
         if(!isset($_SESSION['flash'])) return null;
         $f=$_SESSION['flash']; unset($_SESSION['flash']); return $f;
@@ -27,28 +27,29 @@ function flash(string $type=null,string $title=null,string $text=''){
 }
 
 /* ------------ imprime si hay mensaje flash y lo consume ------------- */
-function flash_alert(): string
-{
+function flash_alert(): string {
     if(!$f = flash()) return '';
     [$t,$h,$m] = array_map(fn($v)=>addslashes($v), [$f['type'],$f['title'],$f['text']]);
     return 
-        "<script>
-            Swal.fire({
-                icon:'$t',
-                title:'$h',
-                text:'$m',
-                // timer: 8000,
-                toast: false,
-                confirmButtonText: 'Aceptar',
-                allowOutsideClick: false
-            });
-        </script>";
+    "
+    <script>
+        Swal.fire({
+            icon:'$t',
+            title:'$h',
+            text:'$m',
+            // timer: 8000,
+            toast: false,
+            confirmButtonText: 'Aceptar',
+            allowOutsideClick: false
+        });
+    </script>
+    ";
 }
 
-function flash_logout(): string
-{
+function flash_logout(): string {
     return
-    "<script>
+    "
+    <script>
         function confirmLogout (e) {
             if (e) e.preventDefault();
             Swal.fire({
@@ -68,28 +69,23 @@ function flash_logout(): string
                 a.addEventListener('click', confirmLogout)
             );
         });
-    </script>";
+    </script>
+    ";
 }
 
-function js_session_tables(): string
-{
+function js_session_tables(): string {
     return
-    "<script>
+    "
         $('#tblActivas, #tblHist').DataTable({
             order: [[3, 'desc']],
             language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
         });
-
-        $('#tblEmployees').DataTable({
-            language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
-        });
-    </script>";
+    ";
 }
 
-function js_session_close(): string
-{
+function js_session_close(): string {
     return
-    "<script>
+    "
         function closeSession(id_session) {
             $.ajax({
                 url:'/sessions/close',
@@ -125,6 +121,14 @@ function js_session_close(): string
             }).then(r=>{
                 if(r.isConfirmed) closeSession(id_session);
             });
+        });";
+}
+
+function js_employee_tables(): string {
+    return
+    "
+        $('#tblEmployees').DataTable({
+            language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
         });
-    </script>";
+    ";
 }

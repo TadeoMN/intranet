@@ -1,4 +1,4 @@
-<footer class="bg-black copyright-bar">
+<footer class="bg-black copyright-bar mt-5">
   <div>
     <p class="mb-0"> 
       Copyright ©2025; Designed by <span class="fw-semibold">TM-SAKE</span>

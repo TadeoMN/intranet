@@ -31,4 +31,28 @@ class User extends Model {
         $st->execute();
         return $st->fetch() ?: null;
     }
+
+    public static function findById(int $id): ?array {
+        $pdo = \Core\Database::pdo();
+        $sql = 
+            '   SELECT *
+                FROM users
+                WHERE id_user = :id_user
+                LIMIT 1';
+        $st=$pdo->prepare($sql);
+        $st->bindParam(':id_user', $id, \PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetch() ?: null;
+    }
+
+    public static function findAllActive(): array {
+        $pdo = \Core\Database::pdo();
+        $sql = 
+            '   SELECT *
+                FROM users
+                WHERE status_user = 1
+                ORDER BY name_user';
+        $st = $pdo->query($sql);
+        return $st->fetchAll() ?: [];
+    }
 }

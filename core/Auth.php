@@ -16,7 +16,7 @@ class Auth {
             return false;
         }
 
-        if (UserSession::activeUser($user['id_user'])) {
+        if (UserSession::sessionActivate($user['id_user'])) {
             $reason = 'active';
             return false;
         }

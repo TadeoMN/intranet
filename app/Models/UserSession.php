@@ -9,18 +9,19 @@ class UserSession extends Model {
         'login_at','logout_at','is_active'
     ];
 
-    public static function activeUser(int $uid): ?array {
+    public static function sessionActivate(int $uid): ?array {
         $pdo = \Core\Database::pdo();
-        $sql =
+        $sql = 
             ('  SELECT *
                 FROM user_sessions
+                INNER JOIN users ON users.id_user = user_sessions.id_user_session_fk
                 WHERE id_user_session_fk = :id_user_session_fk
                     AND is_active = 1
                 LIMIT 1');
         $st = $pdo->prepare($sql);
         $st->bindParam(':id_user_session_fk', $uid, \PDO::PARAM_INT);
         $st->execute();
-        return $st->fetch() ? : null;
+        return $st->fetch() ?: null;
     }
 
     public static function deactivate(string $token_session): void {
@@ -84,7 +85,7 @@ class UserSession extends Model {
         return true;
     }
 
-    public static function activeForUser(): array {
+    public static function allSessionActivate(): array {
         $pdo = \Core\Database::pdo();
         $sql = 
             ('  SELECT *
@@ -98,7 +99,7 @@ class UserSession extends Model {
         return $st->fetchAll() ?: [];
     }
 
-    public static function historyForUser(): array {
+    public static function historySession(): array {
         $pdo = \Core\Database::pdo();
         $sql = 
             ('  SELECT *

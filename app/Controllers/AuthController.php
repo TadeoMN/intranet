@@ -19,7 +19,7 @@ class AuthController {
         switch ($reason){
             case 'ok':
                 flash('success','Bienvenido','Acceso correcto');
-                return redirect($ok ? '/dashboard' : '/');
+                return redirect('/dashboard');
             case 'active':
                 flash('warning','Sesión abierta','Tu cuenta ya tiene una sesión activa. Si no la reconoces, contacta al administrador.');
                 break;

@@ -1,10 +1,8 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Permission;
-use App\Models\UserSession;
+use App\Services\DashboardService;
+
 use function view, redirect;
 
 class DashboardController {
@@ -14,13 +12,9 @@ class DashboardController {
             return redirect('/');
         }
 
-        $users       = User::all();              // solo activos
-        $roles       = Role::all();              // siempre visibles
-        $permissions = Permission::all();        // idem
+        $dashboardData = DashboardService::getDashboardData($_SESSION['uid'] ?? 0);
 
-        $session     = UserSession::activeUser($_SESSION['uid'] ?? 0);
-        $active   = UserSession::activeForUser();
-        $history  = UserSession::historyForUser();
+        extract($dashboardData);
 
         return view('dashboard/dashboard', compact('users', 'roles', 'permissions', 'active', 'history', 'session'));
     }

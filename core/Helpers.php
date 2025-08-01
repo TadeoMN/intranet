@@ -39,6 +39,8 @@ function flash_alert(): string {
             text:'$m',
             // timer: 8000,
             toast: false,
+            heightAuto: false,
+            scrollbarPadding: false,
             confirmButtonText: 'Aceptar',
             allowOutsideClick: false
         });
@@ -80,6 +82,7 @@ function js_session_tables(): string {
             order: [[3, 'desc']],
             language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
         });
+
     ";
 }
 
@@ -131,4 +134,31 @@ function js_employee_tables(): string {
             language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
         });
     ";
+}
+
+function buildUrl(array $changes = []): string {
+    $params = [
+        'page' => $_GET['page'] ?? 1,
+        'limit' => $_GET['limit'] ?? 10,
+        'search' => $_GET['search'] ?? '',
+        'dateFrom' => $_GET['dateFrom'] ?? '',
+        'dateTo' => $_GET['dateTo'] ?? '',
+        'sort' => $_GET['sort'] ?? 'code_employee',
+        'order' => $_GET['order'] ?? 'asc'
+    ];
+
+    $params = array_merge($params, $changes);
+    $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
+    return '/employees/list?' . htmlspecialchars(http_build_query($params), ENT_QUOTES, 'UTF-8');
+}
+
+function pageUrl(int $page, array $params = []): string {
+    $params = array_merge([
+        'page' => $page,
+        'limit' => $_GET['limit'] ?? 10,
+        'search' => $_GET['search'] ?? '',
+        'dateFrom' => $_GET['dateFrom'] ?? '',
+        'dateTo' => $_GET['dateTo'] ?? ''
+    ], $params);
+    return '/employees/list?' . http_build_query($params);
 }

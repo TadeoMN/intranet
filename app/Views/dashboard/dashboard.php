@@ -7,9 +7,11 @@
       <p class="text-center">Bienvenido al panel de control <?= $_SESSION['name'] ?? 'invitado' ?>.</p>
   </div>
 
-  <div class="container m-auto">
+  <div class="text-center container mt-4 mb-3">
     <h4>Sesiones activas</h4>
-    <table id="tblActivas" class="table table-striped">
+  </div>
+  <div class="table-responsive container">
+    <table id="tblActivas" class="table table-hover align-middle">
       <thead>
         <tr>
           <th class="text-center">ID</th>
@@ -37,9 +39,13 @@
     </table>
   </div>
 
-  <div class="container m-auto">
+
+  <div class="text-center container mt-4 mb-3">
     <h4 class="mt-4">Historial de sesiones</h4>
-    <table id="tblHist" class="table table-striped">
+  </div>
+
+  <div class="table-responsive container">
+    <table id="tblHist" class="table table-hover align-middle">
       <thead>
         <tr>
           <th class="text-center">ID</th>

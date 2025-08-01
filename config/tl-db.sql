@@ -389,7 +389,10 @@ INSERT INTO `users` (`name_user`, `password_hash_user`, `status_user`) VALUES
 ('t.mejia', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
 ('m.flores', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
 ('j.perez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('t.juarez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO');
+('t.juarez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
+('j.garcia', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
+('m.hernandez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO');
+
 
 INSERT INTO `department` (`name_department`, `id_manager_employee_fk`) VALUES
 ('DIRECCION', NULL),
@@ -430,7 +433,9 @@ INSERT INTO `employee` (`code_employee`, `name_employee`, `date_hired`, `type_em
 ('TL-0005', 'MEJIA NIEVES JESUS TADEO', '2025-05-08', 'ADMINISTRATIVO', 5, 8),
 ('TL-0006', 'FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 6, 10),
 ('TL-0007', 'PEREZ GARCIA JOSE LUIS', '2025-04-01', 'ADMINISTRATIVO', 7, 11),
-('TL-0008', 'JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 8, 12);
+('TL-0008', 'JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 8, 12),
+('TL-0009', 'GARCIA PEREZ JUAN CARLOS', '2025-04-01', 'ADMINISTRATIVO', 9, 13),
+('TL-0010', 'HERNANDEZ LOPEZ MARIA JOSE', '2025-04-01', 'ADMINISTRATIVO', 10, 14);
 
 -- Insertar roles básicos del sistema
 INSERT INTO `roles` (`name_role`) VALUES

@@ -22,13 +22,6 @@ body {
   background-color: #f4f4f4;
   font-family: var(--tl-primary-font);
   font-size: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  min-height: 100vh;
-}
-body.swal2-height-auto {
-    height: inherit !important;
 }
 .background-login{
   display: flex;
@@ -62,6 +55,12 @@ body.swal2-height-auto {
   margin-right: 5px;
 }
 .tl-icon-xl{
-  padding: .4rem;
-  font-size: 20px;
+  padding: .35rem;
+  font-size: 1.2rem;
+}
+
+.tl-pagination-md {
+    --bs-pagination-padding-x: 1rem;
+    --bs-pagination-padding-y: .4rem;
+    --bs-pagination-font-size: 1.1rem;
 }

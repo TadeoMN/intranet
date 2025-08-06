@@ -4,7 +4,7 @@ namespace App\Models;
 class User extends Model {
     protected static string $table='users';
     protected static string $primary='id_user';
-    protected static array  $fillable=['name_user','password_hash_user','status_user'];
+    protected static array  $fillable=['name_user','password_hash_user','status_user', 'id_employee_fk'];
 
     public static function findByEmail(string $email): ?array {
         $pdo = \Core\Database::pdo();

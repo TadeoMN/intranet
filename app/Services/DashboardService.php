@@ -5,6 +5,8 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\UserSession;
+use App\Models\Department;
+use App\Models\Positions;
 use Core\Cache;
 use Core\Database;
 
@@ -41,20 +43,30 @@ class DashboardService {
      */
     private static function getDynamicDashboardData(int $userId): array {
       
-      $session = UserSession::sessionActivate($userId);
+        $session = UserSession::sessionActivate($userId);
+        $active = UserSession::allSessionActivate();
+        $history = UserSession::historySession();
+        $users = User::findAllActive();
 
-      $active = UserSession::allSessionActivate();
+        $departments = Department::all();
+        $positions = Positions::all();
+        $positionsByDepartment = [];
 
-      $history = UserSession::historySession();
+        foreach ($positions as $position) {
+            $positionsByDepartment[$position['id_department_fk']][] = [
+                'id_position' => $position['id_position'],
+                'name_position' => $position['name_position']
+            ];
+        }
 
-      $users = User::findAllActive();
-
-      return [
-          'users' => $users,
-          'session' => $session,
-          'active' => $active,
-          'history' => $history
-      ];
+        return [
+            'users' => $users,
+            'session' => $session,
+            'active' => $active,
+            'history' => $history,
+            'departments' => $departments,
+            'positionsByDepartment' => $positionsByDepartment
+        ];
     }
 
     /**

@@ -99,7 +99,7 @@
                             <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink3">
                                   <li><h6 class="dropdown-header">Nuevos Registros</h6></li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
                                         <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
                                         Alta de Empleado
                                     </a>

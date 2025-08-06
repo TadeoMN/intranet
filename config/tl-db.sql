@@ -41,7 +41,7 @@ CREATE TABLE roles (
 DROP TABLE IF EXISTS permissions;
 CREATE TABLE permissions (
   id_permission SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  code_permission VARCHAR(60) NOT NULL UNIQUE,
+  name_permission VARCHAR(60) NOT NULL UNIQUE,
   description_permission TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -65,9 +65,11 @@ CREATE TABLE users (
   id_user INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name_user VARCHAR(50) COLLATE utf8mb4_bin NOT NULL UNIQUE,
   password_hash_user VARCHAR(255) NOT NULL,
-  status_user ENUM('ACTIVO', 'INACTIVO', 'BLOQUEADO') DEFAULT 'ACTIVO',
+  status_user ENUM('ACTIVO', 'INACTIVO', 'BLOQUEADO', 'FORZAR_RESET') DEFAULT 'FORZAR_RESET',
+  id_employee_fk INT UNSIGNED NULL UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Tabla puente M:N entre usuarios y roles
@@ -136,6 +138,23 @@ BEGIN
 END//
 DELIMITER ;
 
+-- --------------------
+-- 1.5 Auditoría genérica
+-- --------------------
+-- audit_log guarda cambios con diff JSON (old→new) y metadatos.
+DROP TABLE IF EXISTS audit_log;
+CREATE TABLE audit_log (
+  id_audit_log BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  entity_name VARCHAR(50),
+  entity_id BIGINT UNSIGNED,
+  action_type ENUM('INSERT','UPDATE','DELETE','LOGIN','LOGOUT','VIEW_PII'),
+  changes_json JSON,
+  performed_by INT UNSIGNED,
+  performed_at DATETIME NOT NULL,
+  ip_addr_session VARBINARY(16),
+  FOREIGN KEY (performed_by) REFERENCES users(id_user)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 /* ---------------------------------------------------------------------
    2. MÓDULO DE EMPLEADOS (HR)
    --------------------------------------------------------------------- */
@@ -150,7 +169,7 @@ DROP TABLE IF EXISTS department;
 CREATE TABLE department (
   id_department SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name_department VARCHAR(100) NOT NULL UNIQUE,
-  id_manager_employee_fk INT UNSIGNED
+  id_manager_employee_fk INT UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Tabla de niveles de puesto
@@ -172,10 +191,10 @@ CREATE TABLE positions (
   id_position INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name_position VARCHAR(100) NOT NULL,
   id_level_position_fk TINYINT UNSIGNED NOT NULL,
-  id_departament_fk SMALLINT UNSIGNED,
-  UNIQUE KEY uq_position (name_position, id_departament_fk),
+  id_department_fk SMALLINT UNSIGNED,
+  UNIQUE KEY uq_position (name_position, id_department_fk),
   FOREIGN KEY (id_level_position_fk) REFERENCES level_position(id_level_position),
-  FOREIGN KEY (id_departament_fk) REFERENCES department(id_department) ON DELETE SET NULL
+  FOREIGN KEY (id_department_fk) REFERENCES department(id_department) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Tabla de tipos de contrato
@@ -227,17 +246,14 @@ CREATE TABLE incident_type (
 DROP TABLE IF EXISTS employee;
 CREATE TABLE employee (
   id_employee INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  code_employee VARCHAR(10) NOT NULL UNIQUE,
-  name_employee VARCHAR(100) COLLATE utf8mb4_bin NOT NULL,
+  code_employee VARCHAR(10) NULL UNIQUE,
+  name_employee VARCHAR(100) COLLATE utf8mb4_bin NOT NULL UNIQUE,
   date_hired DATE NOT NULL,
   status_employee ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO') DEFAULT 'ACTIVO',
   type_employee ENUM('OPERATIVO', 'ADMINISTRATIVO') NOT NULL DEFAULT 'OPERATIVO',
   seniority_employee DECIMAL(4,2) NULL,
-  id_user_fk INT UNSIGNED NOT NULL,
   id_position_fk INT UNSIGNED NOT NULL,
-  FOREIGN KEY (id_user_fk) REFERENCES users(id_user) ON DELETE RESTRICT,
   FOREIGN KEY (id_position_fk) REFERENCES positions(id_position) ON DELETE RESTRICT,
-  CONSTRAINT chk_employee_hired CHECK (date_hired <= CURDATE()),
   CONSTRAINT chk_employee_seniority CHECK (seniority_employee >= 0 AND seniority_employee <= 99.9)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -245,11 +261,41 @@ ALTER TABLE department
   ADD CONSTRAINT id_manager_department_fk FOREIGN KEY (id_manager_employee_fk) REFERENCES employee(id_employee) ON DELETE SET NULL;
 
 DELIMITER //
-CREATE TRIGGER trg_employee_set_seniority
+CREATE TRIGGER trg_employee_insert_new
 BEFORE INSERT ON employee
 FOR EACH ROW
 BEGIN
+  DECLARE last_id INT;
+  IF last_id IS NULL THEN
+    SELECT COALESCE(SUBSTRING(MAX(code_employee), 4) + 0, 0) +1 INTO last_id
+    FROM employee
+    WHERE code_employee LIKE 'TL-%';
+  END IF;
+  SET NEW.code_employee = CONCAT('TL-', LPAD(last_id, 4, '0'));
   SET NEW.seniority_employee = ROUND(TIMESTAMPDIFF(MONTH, NEW.date_hired, CURDATE()) / 12, 1);
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER trg_employee_update_seniority
+BEFORE UPDATE ON employee
+FOR EACH ROW
+BEGIN
+  IF NEW.date_hired <> OLD.date_hired THEN
+    SET NEW.seniority_employee = ROUND(TIMESTAMPDIFF(MONTH, NEW.date_hired, CURDATE()) / 12, 1);
+  END IF;
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER trg_user_after_insert_employee
+AFTER INSERT ON employee
+FOR EACH ROW
+BEGIN
+  INSERT INTO users
+    (name_user, password_hash_user, id_employee_fk)
+  VALUES
+    (NEW.code_employee, '$pending$', NEW.id_employee);
 END//
 DELIMITER ;
 
@@ -290,7 +336,7 @@ CREATE TABLE employee_position_history (
   id_snapshot_position INT UNSIGNED NOT NULL,
   name_snapshot_position VARCHAR(100) NOT NULL,
   id_level_snapshot_position TINYINT UNSIGNED NOT NULL,
-  id_snapshot_departament SMALLINT UNSIGNED,
+  id_snapshot_department SMALLINT UNSIGNED,
   FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -304,7 +350,8 @@ DROP TABLE IF EXISTS contracts;
 CREATE TABLE contracts (
   id_contract INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_employee_fk INT UNSIGNED NOT NULL,
-  code_employee_snapshot CHAR(10),
+  number_payrroll_contract INT UNSIGNED NOT NULL,
+  code_employee_snapshot CHAR(10) DEFAULT NULL,
   id_contract_type_fk SMALLINT UNSIGNED NOT NULL,
   id_payroll_scheme_fk SMALLINT UNSIGNED NOT NULL,
   start_date_contract DATE NOT NULL,
@@ -375,24 +422,8 @@ CREATE TABLE incident (
   reported_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_incident_type_fk) REFERENCES incident_type(id_incident_type) ON DELETE RESTRICT,
   FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE RESTRICT,
-  FOREIGN KEY (reported_by) REFERENCES employee(id_employee) ON DELETE RESTRICT,
-  CONSTRAINT chk_date_incident CHECK (date_incident <= NOW()),
-  CONSTRAINT chk_reported_at_incident CHECK (reported_at <= NOW())
+  FOREIGN KEY (reported_by) REFERENCES employee(id_employee) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-INSERT INTO `users` (`name_user`, `password_hash_user`, `status_user`) VALUES
-('l.tamez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('c.rios', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('e.sanchez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('n.perez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('t.mejia', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('m.flores', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('j.perez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('t.juarez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('j.garcia', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO'),
-('m.hernandez', '$argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink', 'ACTIVO');
-
 
 INSERT INTO `department` (`name_department`, `id_manager_employee_fk`) VALUES
 ('DIRECCION', NULL),
@@ -405,13 +436,18 @@ INSERT INTO `department` (`name_department`, `id_manager_employee_fk`) VALUES
 ('COMPRAS', NULL);
 
 INSERT INTO `level_position` (`name_level_position`, `description_level_position`) VALUES
-('JUNIOR', 'Nivel de entrada para nuevos empleados'),
-('SENIOR', 'Nivel avanzado con mayor responsabilidad'),
+('JUNIOR', 'Nivel de entrada para nuevos empleados administrativos'),
+('INTERMEDIO', 'Nivel con experiencia moderada y autonomía para empleos administrativos'),
+('SENIOR', 'Nivel avanzado con mayor responsabilidad para empleos administrativos'),
 ('LIDER', 'Responsable de un equipo o proyecto'),
 ('GERENTE', 'Encargado de la gestión de un departamento'),
-('DIRECTOR', 'Alta dirección con visión estratégica');
+('DIRECTOR', 'Alta dirección con visión estratégica'),
+('INGENIERO', 'Nivel técnico especializado con alta responsabilidad'),
+('AUDITOR', 'Responsable de auditorías y cumplimiento normativo'),
+('TECNICO', 'Especialista técnico con habilidades prácticas'),
+('AUXILIAR', 'Soporte administrativo básico');
 
-INSERT INTO `positions` (`name_position`, `id_level_position_fk`, `id_departament_fk`) VALUES
+INSERT INTO `positions` (`name_position`, `id_level_position_fk`, `id_department_fk`) VALUES
 ('DIRECTOR GENERAL',5,1),
 ('GERENTE',4,2),
 ('AUXILIAR',1,2),
@@ -425,18 +461,6 @@ INSERT INTO `positions` (`name_position`, `id_level_position_fk`, `id_departamen
 ('AUDITOR',2,6),
 ('AUXILIAR',2,6);
 
-INSERT INTO `employee` (`code_employee`, `name_employee`, `date_hired`, `type_employee`, `id_user_fk`, `id_position_fk`) VALUES
-('TL-0001', 'TAMEZ ALCARAZ EDGAR LEONARDO', '2017-06-01', 'ADMINISTRATIVO', 1, 1),
-('TL-0002', 'FLORES RIOS CLAUDIA', '2024-01-31', 'ADMINISTRATIVO', 2, 2),
-('TL-0003', 'SANCHEZ ZEPEDA EMMANUEL', '2017-06-01', 'ADMINISTRATIVO', 3, 4),
-('TL-0004', 'PEREZ MORALES NORMA ANGELICA', '2018-01-15', 'ADMINISTRATIVO', 4, 6),
-('TL-0005', 'MEJIA NIEVES JESUS TADEO', '2025-05-08', 'ADMINISTRATIVO', 5, 8),
-('TL-0006', 'FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 6, 10),
-('TL-0007', 'PEREZ GARCIA JOSE LUIS', '2025-04-01', 'ADMINISTRATIVO', 7, 11),
-('TL-0008', 'JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 8, 12),
-('TL-0009', 'GARCIA PEREZ JUAN CARLOS', '2025-04-01', 'ADMINISTRATIVO', 9, 13),
-('TL-0010', 'HERNANDEZ LOPEZ MARIA JOSE', '2025-04-01', 'ADMINISTRATIVO', 10, 14);
-
 -- Insertar roles básicos del sistema
 INSERT INTO `roles` (`name_role`) VALUES
 ('ADMINISTRADOR'),
@@ -445,13 +469,15 @@ INSERT INTO `roles` (`name_role`) VALUES
 ('EMPLEADO');
 
 -- Insertar permisos básicos
-INSERT INTO `permissions` (`code_permission`, `description_permission`) VALUES
+INSERT INTO `permissions` (`name_permission`, `description_permission`) VALUES
 ('user_create', 'Crear nuevos usuarios'),
 ('user_edit', 'Editar información de usuarios'),
 ('user_delete', 'Eliminar usuarios'),
 ('employee_create', 'Crear registros de empleados'),
 ('employee_edit', 'Editar información de empleados'),
 ('employee_view_all', 'Ver información de todos los empleados'),
+('employee_view', 'Ver información de un empleado'),
+('employee_delete', 'Eliminar registros de empleados'),
 ('contract_manage', 'Gestionar contratos de empleados'),
 ('leave_approve', 'Aprobar solicitudes de permisos'),
 ('incident_manage', 'Gestionar incidencias'),
@@ -487,8 +513,30 @@ INSERT INTO `incident_type` (`name_incident_type`, `description_incident_type`) 
 ('COMPORTAMIENTO', 'Problema de comportamiento'),
 ('RENDIMIENTO', 'Bajo rendimiento laboral');
 
-SELECT *
-FROM employee
-JOIN positions ON employee.id_position_fk = positions.id_position
-JOIN department ON positions.id_departament_fk = department.id_department
-JOIN users ON users.id_user = employee.id_user_fk;
+INSERT INTO `employee` (`name_employee`, `date_hired`, `type_employee`, `id_position_fk`) VALUES
+('TAMEZ ALCARAZ EDGAR LEONARDO', '2017-06-01', 'ADMINISTRATIVO', 1),
+('FLORES RIOS CLAUDIA', '2024-01-31', 'ADMINISTRATIVO', 2),
+('SANCHEZ ZEPEDA EMMANUEL', '2017-06-01', 'ADMINISTRATIVO', 3),
+('PEREZ MORALES NORMA ANGELICA', '2018-01-15', 'ADMINISTRATIVO', 4),
+('MEJIA NIEVES JESUS TADEO', '2025-05-08', 'ADMINISTRATIVO', 5),
+('FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 6),
+('PEREZ GARCIA JOSE LUIS', '2025-04-01', 'ADMINISTRATIVO', 7),
+('JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 8),
+('GARCIA PEREZ JUAN CARLOS', '2025-04-01', 'ADMINISTRATIVO', 9),
+('HERNANDEZ LOPEZ MARIA JOSE', '2025-04-01', 'ADMINISTRATIVO', 10);
+
+DROP EVENT IF EXISTS `employee_senority_update`;
+DELIMITER //
+CREATE EVENT `employee_senority_update`
+ON SCHEDULE
+  EVERY 1 DAY
+  STARTS '2025-08-06 23:59:59'
+DO
+BEGIN
+  IF DAY(CURDATE()) = DAY(LAST_DAY(CURDATE())) THEN
+    UPDATE employee
+      SET seniority_employee = ROUND(TIMESTAMPDIFF(MONTH, date_hired, CURDATE()) / 12, 1)
+    WHERE status_employee = 'ACTIVE';
+  END IF;
+END//
+DELIMITER ;

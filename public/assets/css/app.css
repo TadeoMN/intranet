@@ -4,6 +4,7 @@
     font-weight: normal;
 }
 
+/* CSS ROOT Variables for TopLabel */
 :root {
   --tl-primary-color: #72a201;
   --tl-secondary-color: #1a1a1a;
@@ -14,6 +15,13 @@
 
   --tl-primary-font: 'Roboto', sans-serif;
 }
+
+/* General Styles Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 html, body {
   height: 100%;
 }
@@ -22,7 +30,28 @@ body {
   background-color: #f4f4f4;
   font-family: var(--tl-primary-font);
   font-size: 16px;
+  display: flex;
+  flex-direction: column;
 }
+main {
+  flex: 1;
+}
+
+/* Form Floating Labels Reset */
+.form-floating>.form-control-plaintext:focus, .form-floating>.form-control-plaintext:not(:placeholder-shown), .form-floating>.form-control:focus, .form-floating>.form-control:not(:placeholder-shown) {
+    padding-top: 1.825rem;
+}
+.form-floating>.form-select {
+    padding-top: 1.825rem;
+}
+.form-floating>.form-control, .form-floating>.form-control-plaintext, .form-floating>.form-select {
+    height: calc(3.8rem + calc(var(--bs-border-width) * 2));
+}
+
+.modal-title {
+  font-weight: 900;
+}
+
 .background-login{
   display: flex;
   flex-direction: column;
@@ -32,6 +61,18 @@ body {
   background-size: cover;
   background-position: center;
 }
+.table-responsive {
+  position: relative;
+  max-width: 80%;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
 .copyright-bar {
   font-size: 14px;
   letter-spacing: .5px;

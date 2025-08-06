@@ -1,12 +1,10 @@
 <?php
-
 /* ------------ configuración ------------- */
 function config(string $path) {
     static $cfg=null;
     if(!$cfg) $cfg = require __DIR__.'/../config/config.php';
     return array_reduce(explode('.',$path), fn($a,$b)=>$a[$b]??null, $cfg);
 }
-
 /* ------------ vistas / redirects --------- */
 function view(string $path,array $vars=[]) {
     extract($vars, EXTR_SKIP);
@@ -14,9 +12,10 @@ function view(string $path,array $vars=[]) {
     require __DIR__."/../app/Views/$path.php";
     return ob_get_clean();
 }
-
-function redirect(string $url) { header("Location: $url"); exit; }
-
+/* ------------ redirección ------------- */
+function redirect(string $url) {
+    header("Location: $url"); exit;
+}
 /* ------------ mensajes flash ------------- */
 function flash(string $type=null,string $title=null,string $text='') {
     if($type===null){
@@ -25,13 +24,11 @@ function flash(string $type=null,string $title=null,string $text='') {
     }
     $_SESSION['flash']=compact('type','title','text');
 }
-
 /* ------------ imprime si hay mensaje flash y lo consume ------------- */
 function flash_alert(): string {
     if(!$f = flash()) return '';
     [$t,$h,$m] = array_map(fn($v)=>addslashes($v), [$f['type'],$f['title'],$f['text']]);
-    return 
-    "
+    return <<<HTML
     <script>
         Swal.fire({
             icon:'$t',
@@ -45,12 +42,11 @@ function flash_alert(): string {
             allowOutsideClick: false
         });
     </script>
-    ";
+    HTML;
 }
-
+/* ------------ mensaje de cierre de sesión ------------- */
 function flash_logout(): string {
-    return
-    "
+    return <<<HTML
     <script>
         function confirmLogout (e) {
             if (e) e.preventDefault();
@@ -72,70 +68,80 @@ function flash_logout(): string {
             );
         });
     </script>
-    ";
+    HTML;
 }
+/* ------------ script para eliminar empleados ------------- */
+function flash_delete_employee(): string {
+    return <<<HTML
+    <script>
+        document.addEventListener('submit', function(e) {
+            const formDelete = e.target.closest('.form-delete-employee');
+            if (!formDelete) return;
 
-function js_session_tables(): string {
-    return
-    "
-        $('#tblActivas, #tblHist').DataTable({
-            order: [[3, 'desc']],
-            language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
+            e.preventDefault();
+            const name_employee = formDelete.querySelector('button[type=\"submit\"]').dataset.name || 'Empleado';
+            Swal.fire({
+                title: 'Eliminar empleado',
+                text: `¿Estás seguro de eliminar a \${name_employee}? Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar',
+                autoHeight: false,
+                scrollbarPadding: false
+            }).then(result => {
+                if (result.isConfirmed) {
+                    formDelete.submit();
+                }
+            });
         });
-
-    ";
+    </script>
+    HTML;
 }
+/* ------------ script para llenar select de puestos según departamento ------------- */
+if(!function_exists('cascadePosition')) {
+    function cascadePosition(array $positionMap) : string {
+        $json = json_encode($positionMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        return <<<HTML
+        <script>
+            (function() {
+                const positionByDepartment = $json;
+                const departmentSelect = document.getElementById('id_department_fk');
+                const positionSelect = document.getElementById('id_position_fk');
 
-function js_session_close(): string {
-    return
-    "
-        function closeSession(id_session) {
-            $.ajax({
-                url:'/sessions/close',
-                type:'POST',
-                data:{id_session},
-                dataType:'json'
-            }).done(res=>{
-                console.log('json ok', res);
+                function fillPositions(departmentId, preselectedPosition = null) {
+                    positionSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+                    if (!departmentId || !positionByDepartment[departmentId]) {
+                        positionSelect.disabled = true;
+                        return;
+                    }
+                    positionByDepartment[departmentId].forEach(position => {
+                        const option = new Option(position.name_position, position.id_position);
+                        positionSelect.add(option);
+                    });
+                    positionSelect.dataset.preselected = '';
+                    positionSelect.disabled = false;
 
-                if(res.ok) {
-                    Swal.fire('Éxito', 'Sesión cerrada correctamente', 'success');
-                    setTimeout(() => location.reload(), 3000);
-                } else {
-                    Swal.fire('Ups', res.msg || 'No se pudo cerrar', 'error');
+                    if (preselectedPosition) {
+                        positionSelect.value = preselectedPosition;
+                    }
                 }
 
-            }).fail((jq,txt,err)=>{
-                console.warn('ajax fail', jq.status, jq.responseText);
-                Swal.fire('Error', 'Petición fallida: '+jq.status, 'error');
-            });
-        }
+                departmentSelect.addEventListener('change', e => {
+                    const preselectedPosition = positionSelect.dataset.preselected || null;
+                    fillPositions(e.target.value, preselectedPosition);
+                });
 
-        $(document).on('click','.close-sess',e=>{
-            e.preventDefault();
-            const id_session = $(e.currentTarget).data('id_session');
-            Swal.fire({
-                title:'Cerrar sesión',
-                text:'¿Deseas cerrarla?',
-                icon:'warning',
-                showCancelButton:true,
-                confirmButtonText:'Cerrar',
-                cancelButtonText:'Cancelar'
-            }).then(r=>{
-                if(r.isConfirmed) closeSession(id_session);
-            });
-        });";
+                // Inicializar con el departamento seleccionado
+                const preselectedDepartment = departmentSelect.value;
+                const preselectedPosition = positionSelect.dataset.preselected || null;
+                fillPositions(preselectedDepartment, preselectedPosition);
+            })();
+        </script>
+        HTML;
+    }
 }
-
-function js_employee_tables(): string {
-    return
-    "
-        $('#tblEmployees').DataTable({
-            language:{ url:'/assets/vendor/datatables/i18n/es-ES.json' }
-        });
-    ";
-}
-
+/* ------------ funciones para paginación y ordenamiento ------------- */
 function buildUrl(array $changes = []): string {
     $params = [
         'page' => $_GET['page'] ?? 1,
@@ -144,21 +150,19 @@ function buildUrl(array $changes = []): string {
         'dateFrom' => $_GET['dateFrom'] ?? '',
         'dateTo' => $_GET['dateTo'] ?? '',
         'sort' => $_GET['sort'] ?? 'code_employee',
-        'order' => $_GET['order'] ?? 'asc'
+        'order' => $_GET['order'] ?? 'asc',
+        'status' => $_GET['status'] ?? null
     ];
 
     $params = array_merge($params, $changes);
     $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
     return '/employees/list?' . htmlspecialchars(http_build_query($params), ENT_QUOTES, 'UTF-8');
 }
-
-function pageUrl(int $page, array $params = []): string {
-    $params = array_merge([
-        'page' => $page,
-        'limit' => $_GET['limit'] ?? 10,
-        'search' => $_GET['search'] ?? '',
-        'dateFrom' => $_GET['dateFrom'] ?? '',
-        'dateTo' => $_GET['dateTo'] ?? ''
-    ], $params);
-    return '/employees/list?' . http_build_query($params);
+function sortLink($colunm, $currentSort, $currentOrder): string {
+    $newOrder = ($currentSort === $colunm && $currentOrder === 'asc') ? 'desc' : 'asc';
+    return buildUrl(['sort' => $colunm, 'order' => $newOrder, 'page' => 1]);
+}
+function sortIcon($colunm, $currentSort, $currentOrder): string {
+    if ($currentSort !== $colunm) { return 'fa-sort'; }
+    return $currentOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
 }

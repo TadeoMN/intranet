@@ -1,7 +1,5 @@
 <?php ob_start(); ?>
 
-<?php include __DIR__.'/../includes/header.php'; ?>
-
   <div class="container my-3">
     <h1 class="text-center">Dashboard  <?= $session['id_session'] ?></h1>
       <p class="text-center">Bienvenido al panel de control <?= $_SESSION['name'] ?? 'invitado' ?>.</p>
@@ -68,7 +66,5 @@
       </tbody>
     </table>
   </div>
-
-<?php include __DIR__.'/../includes/footer.php'; ?>
 
 <?php $content = ob_get_clean(); include __DIR__.'/../layouts/layout-main.php'; ?>

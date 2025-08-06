@@ -31,13 +31,20 @@
   $router->get('/logout', 'AuthController@logout');
   $router->get('/dashboard', 'DashboardController@index');
   $router->post('/sessions/close', 'SessionController@close');
-  $router->get('/employees/list', 'EmployeeController@listEmployees');
-  $router->get('/employees/view/{id}', 'EmployeeController@viewEmployee');
-  $router->get('/employees/edit/{id}', 'EmployeeController@editEmployee');
-  $router->post('/employees/update/{id}', 'EmployeeController@updateEmployee');
-  $router->post('/employees/delete/{id}', 'EmployeeController@deleteEmployee');
-  $router->get('/employees/create', 'EmployeeController@createEmployee');
 
+  $router->get('/employees/list', 'EmployeeController@listEmployees');
+  $router->post('/employee/delete/{id}', 'EmployeeController@deleteEmployee');
+  $router->post('/employee/store', 'EmployeeController@storeEmployee');
+  $router->post('/employee/update/{id}', 'EmployeeController@updateEmployee');
+  $router->get('/api/employee/{id}', 'EmployeeController@showEmployee');
+  $router->get('/employees/profile/{id}', 'EmployeeController@showProfileEmployee');
+
+  $router->get('/employees/edit/{id}', 'EmployeeController@editEmployee');
+
+
+  $router->get('/employee/create', 'EmployeeController@createEmployee');
+  $router->post('/employees/update/{id}', 'EmployeeController@updateEmployee');
+  
   $output = $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
   echo $output;

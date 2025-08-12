@@ -50,4 +50,22 @@ class Contracts extends Model {
         $st->execute();
         return (int)$pdo->lastInsertId();
     }
+
+    /**
+     * Update a contract by employee ID.
+     * @param int $id_employee Employee ID.
+     * @param array $data Contract data to update.
+     * @return bool True if the contract was updated, false otherwise.
+     */
+    public static function updateByEmployeeId(int $id_employee, array $data): bool {
+        $pdo = \Core\Database::pdo();
+        $setClause = implode(', ', array_map(fn($key) => "$key = :$key", array_keys($data)));
+        $sql = "UPDATE " . static::$table . " SET $setClause WHERE id_employee_fk = :id_employee";
+        $st = $pdo->prepare($sql);
+        foreach ($data as $key => $value) {
+            $st->bindValue(':' . $key, $value);
+        }
+        $st->bindValue(':id_employee', $id_employee, \PDO::PARAM_INT);
+        return $st->execute();
+    }
 }

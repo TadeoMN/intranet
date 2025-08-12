@@ -40,6 +40,20 @@ class Employee extends Model {
         $st->execute();
         return $st->fetch() ?: null;
     }
+
+    /**
+     * Find an employee by ID (simple version without joins).
+     * @param int $id_employee Employee ID.
+     * @return array|null Employee data or null if not found.
+     */
+    public static function findByIdSimple(int $id_employee): ?array {
+        $pdo = \Core\Database::pdo();
+        $sql = 'SELECT * FROM employee WHERE id_employee = :id_employee LIMIT 1';
+        $st = $pdo->prepare($sql);
+        $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetch() ?: null;
+    }
     /**
      * Filter and paginate employees based on various criteria.
      * @param ?string $search Search term for employee name, code, status, type, etc.

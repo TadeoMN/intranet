@@ -38,6 +38,10 @@
   $router->post('/employee/update/{id}', 'EmployeeController@updateEmployee');
   $router->get('/api/employee/{id}', 'EmployeeController@showEmployee');
   $router->get('/employees/profile/{id}', 'EmployeeController@showProfileEmployee');
+  $router->post('/employees/profile/update/{id}', 'EmployeeController@updateProfileEmployee');
+  $router->get('/employees/profile/create/{id}', 'EmployeeController@createProfileEmployee');
+  $router->post('/employees/profile/store/{id}', 'EmployeeController@storeProfileEmployee');
+  $router->get('/api/employees/search', 'EmployeeController@searchEmployees');
 
   $router->get('/employees/edit/{id}', 'EmployeeController@editEmployee');
 

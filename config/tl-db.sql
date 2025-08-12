@@ -119,6 +119,10 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Trigger para insertar en el historial al cerrar sesión.
+-- Se activa cuando se actualiza una sesión a inactiva (logout).
+-- Inserta un registro en `session_history` con los datos de la sesión.
+-- Esto permite mantener un registro histórico de todas las sesiones.
 DELIMITER //
 CREATE TRIGGER trg_session_to_history
 AFTER UPDATE ON user_sessions
@@ -260,6 +264,11 @@ CREATE TABLE employee (
 ALTER TABLE department
   ADD CONSTRAINT id_manager_department_fk FOREIGN KEY (id_manager_employee_fk) REFERENCES employee(id_employee) ON DELETE SET NULL;
 
+
+-- Triggers para manejar el código del empleado y calcular la antigüedad.
+-- El código se genera automáticamente en el formato TL-XXXX, donde XXXX es un número secuencial.
+-- La antigüedad se calcula en años redondeados a un decimal.
+SET @last_id = NULL;
 DELIMITER //
 CREATE TRIGGER trg_employee_insert_new
 BEFORE INSERT ON employee
@@ -276,6 +285,9 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Trigger para actualizar la antigüedad al modificar la fecha de contratación.
+-- Se recalcula la antigüedad solo si la fecha de contratación cambia.
+-- Esto asegura que la antigüedad se mantenga actualizada sin afectar otros campos.
 DELIMITER //
 CREATE TRIGGER trg_employee_update_seniority
 BEFORE UPDATE ON employee
@@ -287,6 +299,9 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Trigger para crear un usuario pendiente al insertar un nuevo empleado.
+-- Inserta un registro en la tabla `users` con el código del empleado y un estado de 'FORZAR_RESET'.
+-- Esto asegura que cada nuevo empleado tenga un usuario asociado para autenticación.
 DELIMITER //
 CREATE TRIGGER trg_user_after_insert_employee
 AFTER INSERT ON employee
@@ -309,9 +324,12 @@ DROP TABLE IF EXISTS employee_profile;
 CREATE TABLE employee_profile (
   id_employee_profile INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_employee_fk INT UNSIGNED NOT NULL UNIQUE,
+  image_employee_profile VARCHAR(255) DEFAULT NULL,
   birthdate_employee_profile DATE,
+  blood_type_employee_profile ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') DEFAULT NULL,
   gender_employee_profile ENUM('HOMBRE', 'MUJER') NOT NULL,
   marital_status_employee_profile ENUM('SOLTERO', 'CASADO', 'DIVORCIADO', 'VIUDO') DEFAULT 'SOLTERO',
+  rfc_employee_profile VARCHAR(13) UNIQUE,
   curp_employee_profile VARCHAR(18) UNIQUE,
   ssn_employee_profile VARCHAR(11) UNIQUE,
   account_number_employee_profile VARCHAR(20) UNIQUE,
@@ -323,6 +341,7 @@ CREATE TABLE employee_profile (
   emergency_contact_employee_profile VARCHAR(100),
   emergency_phone_employee_profile VARCHAR(20),
   emergency_relationship_employee_profile VARCHAR(50),
+  digital_file_employee_profile VARCHAR(255) DEFAULT NULL,
   FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -350,7 +369,7 @@ DROP TABLE IF EXISTS contracts;
 CREATE TABLE contracts (
   id_contract INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_employee_fk INT UNSIGNED NOT NULL,
-  number_payrroll_contract INT UNSIGNED NOT NULL,
+  number_payroll_contract INT UNSIGNED NOT NULL,
   code_employee_snapshot CHAR(10) DEFAULT NULL,
   id_contract_type_fk SMALLINT UNSIGNED NOT NULL,
   id_payroll_scheme_fk SMALLINT UNSIGNED NOT NULL,
@@ -367,6 +386,10 @@ CREATE TABLE contracts (
   CONSTRAINT chk_salary_contract CHECK (salary_contract >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Trigger para manejar el código del empleado en los contratos.
+-- Se asegura que al insertar un nuevo contrato, el código del empleado se complete automáticamente
+-- si no se proporciona. El código se obtiene del empleado asociado al contrato.
+-- Esto permite mantener la consistencia del código del empleado en los contratos.
 DELIMITER //
 CREATE TRIGGER trg_contract_code_snapshot
 BEFORE INSERT ON contracts
@@ -425,6 +448,7 @@ CREATE TABLE incident (
   FOREIGN KEY (reported_by) REFERENCES employee(id_employee) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Insertar departamentos básicos del sistema
 INSERT INTO `department` (`name_department`, `id_manager_employee_fk`) VALUES
 ('DIRECCION', NULL),
 ('RECURSOS HUMANOS', NULL),
@@ -435,6 +459,7 @@ INSERT INTO `department` (`name_department`, `id_manager_employee_fk`) VALUES
 ('ALMACEN', NULL),
 ('COMPRAS', NULL);
 
+-- Insertar niveles de puesto básicos del sistema
 INSERT INTO `level_position` (`name_level_position`, `description_level_position`) VALUES
 ('JUNIOR', 'Nivel de entrada para nuevos empleados administrativos'),
 ('INTERMEDIO', 'Nivel con experiencia moderada y autonomía para empleos administrativos'),
@@ -447,6 +472,7 @@ INSERT INTO `level_position` (`name_level_position`, `description_level_position
 ('TECNICO', 'Especialista técnico con habilidades prácticas'),
 ('AUXILIAR', 'Soporte administrativo básico');
 
+-- Insertar puestos básicos del sistema
 INSERT INTO `positions` (`name_position`, `id_level_position_fk`, `id_department_fk`) VALUES
 ('DIRECTOR GENERAL',5,1),
 ('GERENTE',4,2),
@@ -513,17 +539,18 @@ INSERT INTO `incident_type` (`name_incident_type`, `description_incident_type`) 
 ('COMPORTAMIENTO', 'Problema de comportamiento'),
 ('RENDIMIENTO', 'Bajo rendimiento laboral');
 
+-- Insertar empleados básicos del sistema
 INSERT INTO `employee` (`name_employee`, `date_hired`, `type_employee`, `id_position_fk`) VALUES
 ('TAMEZ ALCARAZ EDGAR LEONARDO', '2017-06-01', 'ADMINISTRATIVO', 1),
 ('FLORES RIOS CLAUDIA', '2024-01-31', 'ADMINISTRATIVO', 2),
-('SANCHEZ ZEPEDA EMMANUEL', '2017-06-01', 'ADMINISTRATIVO', 3),
-('PEREZ MORALES NORMA ANGELICA', '2018-01-15', 'ADMINISTRATIVO', 4),
-('MEJIA NIEVES JESUS TADEO', '2025-05-08', 'ADMINISTRATIVO', 5),
-('FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 6),
+('SANCHEZ ZEPEDA EMMANUEL', '2017-06-01', 'ADMINISTRATIVO', 4),
+('PEREZ MORALES NORMA ANGELICA', '2018-01-15', 'ADMINISTRATIVO', 6),
+('MEJIA NIEVES JESUS TADEO', '2025-05-08', 'ADMINISTRATIVO', 8),
+('FLORES GERARDO CLAUDIA MARLENE ', '2025-03-24', 'ADMINISTRATIVO', 10),
 ('PEREZ GARCIA JOSE LUIS', '2025-04-01', 'ADMINISTRATIVO', 7),
-('JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 8),
-('GARCIA PEREZ JUAN CARLOS', '2025-04-01', 'ADMINISTRATIVO', 9),
-('HERNANDEZ LOPEZ MARIA JOSE', '2025-04-01', 'ADMINISTRATIVO', 10);
+('JUAREZ GARCIA TATIANA', '2025-04-01', 'ADMINISTRATIVO', 3),
+('GARCIA PEREZ JUAN CARLOS', '2025-04-01', 'ADMINISTRATIVO', 5),
+('HERNANDEZ LOPEZ MARIA JOSE', '2025-04-01', 'ADMINISTRATIVO', 9);
 
 DROP EVENT IF EXISTS `employee_senority_update`;
 DELIMITER //
@@ -540,3 +567,8 @@ BEGIN
   END IF;
 END//
 DELIMITER ;
+
+ALTER TABLE employee_profile
+  ADD COLUMN image_employee_profile VARCHAR(255) DEFAULT NULL,
+  ADD COLUMN rfc_employee_profile VARCHAR(13) UNIQUE,
+  ADD COLUMN digital_file_employee_profile VARCHAR(255) DEFAULT NULL;

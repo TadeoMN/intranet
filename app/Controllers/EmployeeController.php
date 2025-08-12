@@ -201,18 +201,39 @@ class EmployeeController {
         }
         return redirect('/employees/list?' . http_build_query($_GET));
     }
-
+    /**
+     * Show the profile of an employee.
+     * @param int $id_employee Employee ID.
+     * @return array Employee profile data.
+     * @throws \Exception If the employee is not found.
+     * @route /employee/profile/{id_employee}
+     * @method GET
+     * @description This function retrieves the profile information of a specific employee by their ID.
+     *              It returns the employee's profile data, including personal and job-related information.
+     */
     public function showProfileEmployee(int $id_employee) {
         $profile = EmployeeProfile::getByEmployeeId($id_employee);
         $contract = Contracts::getByEmployeeId($id_employee);
         $employee = Employee::findById($id_employee);
+        $departments = Department::all();
+        $positions = Positions::all();
+        $positionsByDepartment = [];
+        $bloodTypes = Employee::getEmployeeProfileEnums('blood_type_employee_profile');
+        $genders = Employee::getEmployeeProfileEnums('gender_employee_profile');
+        $maritalStatuses = Employee::getEmployeeProfileEnums('marital_status_employee_profile');
 
-        // mandar error si perfil y contrato no existen
+        foreach ($positions as $position) {
+            $positionsByDepartment[$position['id_department_fk']][] = [
+                'id_position' => $position['id_position'],
+                'name_position' => $position['name_position']
+            ];
+        }
+
         if (!$contract || !$profile) {
             flash('error', 'Perfil no encontrado', 'El perfil del empleado solicitado no existe.');
             return redirect('/employees/list');
         }
-        return view('hr/employeeProfile', compact('profile', 'contract', 'employee'));
+        return view('hr/employeeProfile', compact('profile', 'contract', 'employee', 'departments', 'positionsByDepartment', 'bloodTypes', 'genders', 'maritalStatuses'));
     }
 
     public function createEmployee() {

@@ -6,15 +6,15 @@
   </div>
 
   <div style="max-width: 80%; max-height: 60vh; overflow-y: auto; margin: 35px auto auto;">
-    <div class="row mx-0 mb-3 d-flex align-items-center p-0">
+    <div class="row mx-0 mb-3 d-flex align-items-center p-0"> <!-- Search and Filter Controls -->
 
-      <div class="py-1 col-sm-12 col-md-4 col-lg-2">
+      <div class="py-1 col-sm-12 col-md-4 col-lg-2"> <!-- New Employee Button -->
         <a href="/employee/create" class="btn btn-success tl-btn-new-employee" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
           <i class="fa-solid fa-plus"></i> Agregar empleado
         </a>
       </div>
 
-      <div class="py-1 col-sm-12 col-md-4 col-lg-8">
+      <div class="py-1 col-sm-12 col-md-4 col-lg-8"> <!-- Search and Filter Form -->
         <form method="GET" action="/employees/list" class="row g-2 align-items-center justify-content-center">
           <div class="form-floating col-auto">
             <input type="text" class="form-control" aria-label="Nombre o ID de empleado" name="search"
@@ -58,7 +58,7 @@
         </form>
       </div>
 
-      <div class="py-1 col-sm-12 col-md-4 col-lg-2">
+      <div class="py-1 col-sm-12 col-md-4 col-lg-2"> <!-- Pagination and Per Page Selector -->
         <form method="GET" action="/employees/list">
           <div class="form-floating">
             <select class="form-select text-nowrap" id="perPage" name="limit" onchange="location.href = '<?= buildUrl()?>&limit=' + this.value" aria-label="Empleados por página" style="min-width: 190px;"> 
@@ -85,7 +85,7 @@
   <div class="table-responsive" style="max-width: 80%; max-height: 60vh; overflow-y: auto; margin: auto;">
     <table id="" class="table table-hover table-bordered">
       <thead class="table-group-divider align-middle text-center table-dark">
-        <tr>
+        <tr> <!-- Table headers / Encabezados de la tabla -->
           <th> <!-- No. de Empleado -->
             <a href="<?= sortLink('code_employee', $pagination['sort'], $pagination['order']) ?>"
               class="text-white d-flex flex-row align-items-center justify-content-center" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ordenar por No. de Empleado"
@@ -172,7 +172,7 @@
       </thead>
       <tbody class="align-middle text-center">
         <?php foreach($employees as $employee): ?>
-        <tr> 
+        <tr> <!-- Table row for each employee / Fila de la tabla para cada empleado -->
           <td> <!-- No. de Empleado -->
             <?= $employee['code_employee'] ?>
           </td>
@@ -213,7 +213,7 @@
             </td>
           <?php elseif ($employee['name_manager'] === 'TAMEZ ALCARAZ EDGAR LEONARDO'): ?>
             <td class="text-muted">
-              SIN JEFE DIRECTO
+              N/A
             </td>
           <?php else: ?>
             <td> <!-- Jefe Directo -->

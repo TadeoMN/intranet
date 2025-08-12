@@ -7,16 +7,35 @@
 /* CSS ROOT Variables for TopLabel */
 :root {
   --tl-primary-color: #72a201;
+  --tl-primary-color-hover: #5f8a01;
+  --tl-primary-color-shadow: rgba(114, 162, 1, 0.5);
   --tl-secondary-color: #1a1a1a;
+
+  --tl-tertiary-color: #005f20;
+  --tl-tertiary-color-hover: #004d1a;
+  --tl-tertiary-color-shadow: rgba(0, 95, 32, 0.5);
+
+  --tl-white-color: #fff;
+  --tl-black-color: #000;
 
   --tl-text-color: #333;
   --tl-text-secondary-color: #666;
   --tl-text-light-color: #f4f4f4;
 
+  --hmq-light-gray: #E9E8EA;
+  --hmq-scrollbar: #A8A8A8;
+
   --tl-primary-font: 'Roboto', sans-serif;
 }
 
-/* General Styles Reset */
+/**
+  * General Styles Overrides
+  * This section contains the general styles for the application.
+  * It includes styles for body, main, and other common elements.
+  * It also includes styles for scrollbars and other UI components.
+  * The styles are designed to provide a consistent look and feel across the application.
+  * The styles are responsive and adapt to different screen sizes.
+  */
 * {
   margin: 0;
   padding: 0;
@@ -33,33 +52,51 @@ body {
   display: flex;
   flex-direction: column;
 }
+body::-webkit-scrollbar, .tl-scroll::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+body::-webkit-scrollbar-thumb, .tl-scroll::-webkit-scrollbar-thumb {
+  border-radius: .75rem;
+  border: .1rem solid var(--hmq-light-gray);
+  background-color: var(--hmq-scrollbar);
+}
+body::-webkit-scrollbar-track, .tl-scroll::-webkit-scrollbar-track {
+  border-radius: .75rem;
+}
+body::-webkit-scrollbar:vertical, .tl-scroll::-webkit-scrollbar:vertical {
+  width: .65rem;
+}
+body::-webkit-scrollbar:horizontal, .tl-scroll::-webkit-scrollbar:horizontal {
+  height: .65rem;
+}
+body::-webkit-scrollbar-button:increment, .body::-webkit-scrollbar-button, .tl-scroll::-webkit-scrollbar-button:increment, .tl-scroll::-webkit-scrollbar-button {
+  display: none;
+}
 main {
   flex: 1;
 }
+hr {
+  border: none;
+  border-top: 5px solid var(--tl-primary-color);
+  margin: .5rem 0;
+}
 
-/* Form Floating Labels Reset */
+/**
+  * Bootstrap Styles Overrides
+  * This file contains the overrides for Bootstrap styles.
+  * It includes custom styles for buttons, forms, and other components.
+  */
 .form-floating>.form-control-plaintext:focus, .form-floating>.form-control-plaintext:not(:placeholder-shown), .form-floating>.form-control:focus, .form-floating>.form-control:not(:placeholder-shown) {
-    padding-top: 1.825rem;
+  padding-top: 1.825rem;
 }
 .form-floating>.form-select {
-    padding-top: 1.825rem;
+  padding-top: 1.825rem;
+}
+.form-floating>.form-control:not(:placeholder-shown) {
+  padding-top: 2rem;
 }
 .form-floating>.form-control, .form-floating>.form-control-plaintext, .form-floating>.form-select {
-    height: calc(3.8rem + calc(var(--bs-border-width) * 2));
-}
-
-.modal-title {
-  font-weight: 900;
-}
-
-.background-login{
-  display: flex;
-  flex-direction: column;
-  justify-content: center!important;
-  background-image: url('../images/bg-toplabel_3.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+  height: calc(3.8rem + calc(var(--bs-border-width) * 2));
 }
 .table-responsive {
   position: relative;
@@ -72,7 +109,30 @@ table thead th {
   top: 0;
   z-index: 2;
 }
+.card .card-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.modal-title {
+  font-weight: 900;
+}
+.nav-link {
+  padding: 20px .5rem!important;
+}
+.dropdown-divider {
+  border-top: 5px solid var(--bs-dropdown-divider-bg)!important;
+}
 
+.background-login{
+  display: flex;
+  flex-direction: column;
+  justify-content: center!important;
+  background-image: url('../images/bg-toplabel_3.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
 .copyright-bar {
   font-size: 14px;
   letter-spacing: .5px;
@@ -82,12 +142,7 @@ table thead th {
   text-align: center;
   margin: 0;
 }
-.nav-link {
-    padding: 20px .5rem!important;
-}
-.dropdown-divider {
-    border-top: 5px solid var(--bs-dropdown-divider-bg)!important;
-}
+
 .tl-icon {
   min-width: 20px;
   height: 20px;
@@ -101,7 +156,58 @@ table thead th {
 }
 
 .tl-pagination-md {
-    --bs-pagination-padding-x: 1rem;
-    --bs-pagination-padding-y: .4rem;
-    --bs-pagination-font-size: 1.1rem;
+  --bs-pagination-padding-x: 1rem;
+  --bs-pagination-padding-y: .4rem;
+  --bs-pagination-font-size: 1.1rem;
+}
+
+.tl-scroll {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.tl-grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .5rem;
+}
+@media (min-width: 992px) {
+  .tl-grid-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+.tl-grid-container div a {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  text-decoration: none;
+  color: var(--tl-text-light-color);
+}
+@media (min-width: 992px) {
+  .tl-grid-container div a {
+    height: 3.875rem;
+  }
+}
+
+.btn-action {
+  display: flex!important;
+  align-items: center!important;
+  justify-content: center!important;
+  --bs-btn-color: var(--tl-white-color);
+  --bs-btn-bg: var(--tl-tertiary-color);
+  --bs-btn-border-color: var(--tl-tertiary-color);
+  --bs-btn-hover-color: var(--tl-white-color);
+  --bs-btn-hover-bg: var(--tl-tertiary-color-hover);
+  --bs-btn-hover-border-color: var(--tl-tertiary-color-shadow);
+  --bs-btn-focus-shadow-rgb: 225, 83, 97;
+  --bs-btn-active-color: var(--tl-white-color);
+  --bs-btn-active-bg: var(--tl-tertiary-color-shadow);
+  --bs-btn-active-border-color: var(--tl-tertiary-color-shadow);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--tl-white-color);
+  --bs-btn-disabled-bg: var(--tl-tertiary-color);
+  --bs-btn-disabled-border-color: var(--tl-tertiary-color);
+
 }

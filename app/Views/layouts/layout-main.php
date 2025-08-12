@@ -30,7 +30,7 @@
 
 <body>
 
-  <header class="bg-dark text-white py-3 sticky-top">    
+  <header class="bg-dark text-white py-2 sticky-top">    
       <nav class="navbar navbar-dark bg-dark sticky-top">
           <div class="container-fluid justify-content-start">
               <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">

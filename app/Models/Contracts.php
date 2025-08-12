@@ -28,12 +28,16 @@ class Contracts extends Model {
      */
     public static function getByEmployeeId(int $id_employee): ?array {
         $pdo = Database::pdo();
-        $sql = "SELECT * FROM " . static::$table . " WHERE id_employee_fk = :id_employee";
+        $sql = 
+            "   SELECT *
+                FROM " . static::$table . "
+                INNER JOIN contract_type ON contracts.id_contract_type_fk = contract_type.id_contract_type
+                INNER JOIN payroll_scheme ON contracts.id_payroll_scheme_fk = payroll_scheme.id_payroll_scheme
+                WHERE id_employee_fk = :id_employee";
         $st = $pdo->prepare($sql);
         $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
         $st->execute();
         return $st->fetch(\PDO::FETCH_ASSOC) ?: null;
-
     }
     /**
      * Create a new contract.

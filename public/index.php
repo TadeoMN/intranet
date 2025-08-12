@@ -40,8 +40,7 @@
   $router->get('/employees/profile/{id}', 'EmployeeController@showProfileEmployee');
 
   $router->get('/employees/edit/{id}', 'EmployeeController@editEmployee');
-
-
+  
   $router->get('/employee/create', 'EmployeeController@createEmployee');
   $router->post('/employees/update/{id}', 'EmployeeController@updateEmployee');
   

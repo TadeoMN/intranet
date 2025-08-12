@@ -262,4 +262,35 @@ class Employee extends Model {
         }
         return $st->rowCount() > 0;
     }
+
+    /**
+     * Update an employee by ID with flexible fields.
+     * @param int $id_employee Employee ID.
+     * @param array $data Employee data to update.
+     * @return bool True if the employee was updated, false otherwise.
+     */
+    public static function updateByIdPartial(int $id_employee, array $data): bool {
+        if (empty($data)) {
+            return false;
+        }
+        
+        $pdo = \Core\Database::pdo();
+        $allowedFields = ['name_employee', 'date_hired', 'status_employee', 'type_employee', 'id_position_fk'];
+        $updateFields = array_intersect_key($data, array_flip($allowedFields));
+        
+        if (empty($updateFields)) {
+            return false;
+        }
+        
+        $setClause = implode(', ', array_map(fn($key) => "$key = :$key", array_keys($updateFields)));
+        $sql = "UPDATE employee SET $setClause WHERE id_employee = :id_employee";
+        
+        $st = $pdo->prepare($sql);
+        foreach ($updateFields as $key => $value) {
+            $st->bindValue(':' . $key, $value);
+        }
+        $st->bindValue(':id_employee', $id_employee, \PDO::PARAM_INT);
+        
+        return $st->execute();
+    }
 }

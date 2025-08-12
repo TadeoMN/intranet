@@ -17,7 +17,7 @@ class Contracts extends Model {
       'trial_period_contract',
       'end_date_contract',
       'salary_contract',
-      'termination_clause_contract',
+      'termination_reason_contract',
       'is_active',
     ];
 

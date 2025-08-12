@@ -58,7 +58,7 @@
               <label for="curp_employee" class="form-label">CURP</label>
             </div>
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" name="nss_employee" id="nss_employee" value="<?= htmlspecialchars($profile['ssn_employee_profile']) ?>" required>
+              <input type="text" class="form-control" name="nss_employee" id="nss_employee" value="<?= htmlspecialchars($profile['nss_employee_profile']) ?>" required>
               <label for="nss_employee" class="form-label">NSS</label>
             </div>
             <div class="form-floating mb-3">

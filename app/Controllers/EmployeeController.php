@@ -253,13 +253,13 @@ class EmployeeController {
                 'status_employee' => $_POST['status_employee'],
                 'type_employee' => $_POST['type_employee']
             ];
-            Employee::updateById($id_employee, $employeeData);
+            Employee::updateByIdPartial($id_employee, $employeeData);
 
             // Update employee profile data
             $profileData = [
                 'birthdate_employee_profile' => $_POST['birthdate_employee'],
                 'curp_employee_profile' => $_POST['curp_employee'],
-                'ssn_employee_profile' => $_POST['nss_employee'],
+                'nss_employee_profile' => $_POST['nss_employee'],
                 'gender_employee_profile' => $_POST['gender_employee'],
                 'marital_status_employee_profile' => $_POST['marital_status_employee'],
                 'account_number_employee_profile' => $_POST['account_number_employee'],
@@ -363,7 +363,7 @@ class EmployeeController {
         $profile = [
             'birthdate_employee_profile' => '',
             'curp_employee_profile' => '',
-            'ssn_employee_profile' => '',
+            'nss_employee_profile' => '',
             'gender_employee_profile' => '',
             'marital_status_employee_profile' => '',
             'account_number_employee_profile' => '',
@@ -400,7 +400,7 @@ class EmployeeController {
                 'id_employee_fk' => $id_employee,
                 'birthdate_employee_profile' => $_POST['birthdate_employee'],
                 'curp_employee_profile' => $_POST['curp_employee'],
-                'ssn_employee_profile' => $_POST['nss_employee'],
+                'nss_employee_profile' => $_POST['nss_employee'],
                 'gender_employee_profile' => $_POST['gender_employee'],
                 'marital_status_employee_profile' => $_POST['marital_status_employee'],
                 'account_number_employee_profile' => $_POST['account_number_employee'],
@@ -436,7 +436,7 @@ class EmployeeController {
                 'status_employee' => $_POST['status_employee'],
                 'type_employee' => $_POST['type_employee']
             ];
-            Employee::updateById($id_employee, $employeeData);
+            Employee::updateByIdPartial($id_employee, $employeeData);
 
             flash('success', 'Perfil creado', 'El perfil del empleado ha sido creado exitosamente.');
         } catch (\Exception $e) {

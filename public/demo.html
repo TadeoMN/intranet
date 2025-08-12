@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Employee Profile Edit Functionality</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container my-4">
+        <!-- Employee Search Modal -->
+        <div class="modal fade" id="employeeSearchModal" tabindex="-1" aria-labelledby="employeeSearchModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="employeeSearchModalLabel">Buscar Empleado</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="text" id="modalSearchInput" class="form-control" placeholder="Buscar por nombre o código de empleado..." value="TAMEZ">
+                        </div>
+                        <div id="employeeSearchResults">
+                            <div class="list-group">
+                                <button type="button" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">TAMEZ ALCARAZ EDGAR LEONARDO</h6>
+                                        <small>EMP001</small>
+                                    </div>
+                                    <p class="mb-1">Departamento: DIRECCION</p>
+                                    <small class="text-muted">Estado: ACTIVO</small>
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">MEJIA NIEVES JESUS TADEO</h6>
+                                        <small>EMP005</small>
+                                    </div>
+                                    <p class="mb-1">Departamento: DISEÑO</p>
+                                    <small class="text-muted">Estado: ACTIVO</small>
+                                    <span class="badge bg-warning">Sin perfil</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img src="https://via.placeholder.com/150x150/6c757d/ffffff?text=Foto"
+                        alt="Foto de Empleado"
+                        class="img-fluid mx-3 rounded-2" style="max-width: 150px; max-height: 150px;">
+                        <h2 class="card-title text-center my-auto">
+                            <strong>TAMEZ ALCARAZ EDGAR LEONARDO</strong>
+                        </h2>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#employeeSearchModal">
+                            <i class="fa-solid fa-search"></i> Buscar Empleado
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="employeeProfileForm" method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Información de Empleado</h5>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="code_employee" id="code_employee" value="EMP001" readonly disabled>
+                            <label for="code_employee" class="form-label">Código del Empleado</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="date_hired" id="date_hired" value="2017-06-01" readonly disabled>
+                            <label for="date_hired" class="form-label">Fecha de Contratación</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" name="status_employee" id="status_employee" disabled>
+                                <option value="ACTIVO" selected>ACTIVO</option>
+                                <option value="INACTIVO">INACTIVO</option>
+                                <option value="SUSPENDIDO">SUSPENDIDO</option>
+                            </select>
+                            <label for="status_employee" class="form-label">Estado del Empleado</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" name="type_employee" id="type_employee" disabled>
+                                <option value="OPERATIVO">OPERATIVO</option>
+                                <option value="ADMINISTRATIVO" selected>ADMINISTRATIVO</option>
+                            </select>
+                            <label for="type_employee" class="form-label">Tipo de Empleado</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>Información Personal</h5>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="birthdate_employee" id="birthdate_employee" value="1985-03-15" readonly disabled>
+                            <label for="birthdate_employee" class="form-label">Fecha de Nacimiento</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="curp_employee" id="curp_employee" value="TAAL850315HNLMRD09" readonly disabled>
+                            <label for="curp_employee" class="form-label">CURP</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="nss_employee" id="nss_employee" value="12345678901" readonly disabled>
+                            <label for="nss_employee" class="form-label">NSS</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" name="gender_employee" id="gender_employee" disabled>
+                                <option value="MASCULINO" selected>MASCULINO</option>
+                                <option value="FEMENINO">FEMENINO</option>
+                                <option value="OTRO">OTRO</option>
+                            </select>
+                            <label for="gender_employee" class="form-label">Género</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" name="marital_status_employee" id="marital_status_employee" disabled>
+                                <option value="SOLTERO" selected>SOLTERO</option>
+                                <option value="CASADO">CASADO</option>
+                                <option value="DIVORCIADO">DIVORCIADO</option>
+                                <option value="VIUDO">VIUDO</option>
+                                <option value="UNION_LIBRE">UNIÓN LIBRE</option>
+                            </select>
+                            <label for="marital_status_employee" class="form-label">Estado Civil</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Información de Contrato</h5>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="number_payroll_contract" id="number_payroll_contract" value="PAY001" readonly disabled>
+                            <label for="number_payroll_contract" class="form-label">Número de Nómina</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" name="salary_contract" id="salary_contract" value="25000" readonly disabled>
+                            <label for="salary_contract" class="form-label">Salario</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="start_date_contract" id="start_date_contract" value="2017-06-01" readonly disabled>
+                            <label for="start_date_contract" class="form-label">Fecha de Inicio de Contrato</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>Información de Contacto</h5>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="mobile_employee_profile" id="mobile_employee_profile" value="8181234567" readonly disabled>
+                            <label for="mobile_employee_profile" class="form-label">Celular</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" name="email_employee_profile" id="email_employee_profile" value="edgar.tamez@empresa.com" readonly disabled>
+                            <label for="email_employee_profile" class="form-label">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="address_employee_profile" id="address_employee_profile" value="Monterrey, NL" readonly disabled>
+                            <label for="address_employee_profile" class="form-label">Dirección</label>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <button type="button" id="editBtn" class="btn btn-primary">
+                    <i class="fa-solid fa-pen-to-square"></i> Editar Perfil
+                </button>
+                <button type="submit" form="employeeProfileForm" id="saveBtn" class="btn btn-success d-none">
+                    <i class="fa-solid fa-save"></i> Guardar Cambios
+                </button>
+                <button type="button" id="cancelBtn" class="btn btn-secondary d-none">
+                    <i class="fa-solid fa-times"></i> Cancelar
+                </button>
+                <a href="#" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a la Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const form = document.getElementById('employeeProfileForm');
+            
+            // Get all form controls that should be editable
+            const editableFields = [
+                'status_employee', 'type_employee', 'birthdate_employee', 'curp_employee', 'nss_employee',
+                'gender_employee', 'marital_status_employee', 'number_payroll_contract', 'salary_contract',
+                'start_date_contract', 'mobile_employee_profile', 'email_employee_profile', 'address_employee_profile'
+            ];
+            
+            // Store original values
+            let originalValues = {};
+            
+            function storeOriginalValues() {
+                editableFields.forEach(fieldName => {
+                    const field = document.getElementById(fieldName);
+                    if (field) {
+                        originalValues[fieldName] = field.value;
+                    }
+                });
+            }
+            
+            function restoreOriginalValues() {
+                editableFields.forEach(fieldName => {
+                    const field = document.getElementById(fieldName);
+                    if (field && originalValues.hasOwnProperty(fieldName)) {
+                        field.value = originalValues[fieldName];
+                    }
+                });
+            }
+            
+            function toggleEditMode(isEditing) {
+                editableFields.forEach(fieldName => {
+                    const field = document.getElementById(fieldName);
+                    if (field) {
+                        field.disabled = !isEditing;
+                        if (field.hasAttribute('readonly')) {
+                            if (isEditing) {
+                                field.removeAttribute('readonly');
+                            } else {
+                                field.setAttribute('readonly', 'readonly');
+                            }
+                        }
+                    }
+                });
+                
+                // Toggle button visibility
+                if (isEditing) {
+                    editBtn.classList.add('d-none');
+                    saveBtn.classList.remove('d-none');
+                    cancelBtn.classList.remove('d-none');
+                } else {
+                    editBtn.classList.remove('d-none');
+                    saveBtn.classList.add('d-none');
+                    cancelBtn.classList.add('d-none');
+                }
+            }
+            
+            // Store original values on page load
+            storeOriginalValues();
+            
+            editBtn.addEventListener('click', function() {
+                toggleEditMode(true);
+            });
+            
+            cancelBtn.addEventListener('click', function() {
+                restoreOriginalValues();
+                toggleEditMode(false);
+            });
+            
+            // Demo: Show edit mode immediately
+            setTimeout(() => {
+                editBtn.click();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

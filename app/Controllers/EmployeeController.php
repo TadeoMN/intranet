@@ -230,11 +230,10 @@ class EmployeeController {
             ];
         }
 
-        // Determine current department and position
+        // Determine current department and position from employee's assigned position
         $currentDept = null;
         $currentPos = null;
-        if ($profile) {
-            // Get department from employee's current position
+        if ($employee['id_position_fk']) {
             foreach ($positions as $pos) {
                 if ($pos['id_position'] == $employee['id_position_fk']) {
                     $currentDept = $pos['id_department_fk'];
@@ -318,9 +317,9 @@ class EmployeeController {
 
         // Validate contract data if provided
         $contractData = [];
-        if (!empty($_POST['number_payroll_contract'])) {
+        if (!empty($_POST['number_payrroll_contract'])) {
             $contractData = [
-                'number_payroll_contract' => (int)$_POST['number_payroll_contract'],
+                'number_payrroll_contract' => (int)$_POST['number_payrroll_contract'],
                 'id_contract_type_fk' => (int)$_POST['id_contract_type_fk'],
                 'id_payroll_scheme_fk' => (int)$_POST['id_payroll_scheme_fk'],
                 'start_date_contract' => $_POST['start_date_contract'],

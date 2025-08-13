@@ -215,9 +215,9 @@ $hasContract = $contract !== null;
                     <div class="col-md-6">
                         <h5>Información de Contrato</h5>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" name="number_payroll_contract" id="number_payroll_contract" 
-                                   value="<?= htmlspecialchars($contract['number_payroll_contract'] ?? '') ?>" <?= $readonly ?>>
-                            <label for="number_payroll_contract">Número de Nómina</label>
+                            <input type="number" class="form-control" name="number_payrroll_contract" id="number_payrroll_contract" 
+                                   value="<?= htmlspecialchars($contract['number_payrroll_contract'] ?? '') ?>" <?= $readonly ?>>
+                            <label for="number_payrroll_contract">Número de Nómina</label>
                         </div>
                         <div class="form-floating mb-3">
                             <select class="form-select" name="id_contract_type_fk" id="id_contract_type_fk" <?= $disabled ?>>
@@ -425,5 +425,29 @@ document.getElementById('searchEmployeeInput').addEventListener('input', functio
 
 <!-- Flash alert -->
 <?= flash_alert() ?>
+
+<!-- Auto-prompt for profile creation if coming from list and no profile exists -->
+<?php if ($mode === 'view' && !$hasProfile && !isset($_GET['no_prompt'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: 'Perfil incompleto',
+        text: 'Este empleado no tiene perfil registrado. ¿Desea crear el perfil ahora?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Crear perfil',
+        cancelButtonText: 'Cancelar',
+        heightAuto: false,
+        scrollbarPadding: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/employee/profile/create/<?= $employee['id_employee'] ?>';
+        } else {
+            window.location.href = '/employees/list';
+        }
+    });
+});
+</script>
+<?php endif; ?>
 
 <?php $content = ob_get_clean(); include __DIR__.'/../layouts/layout-main.php'; ?>

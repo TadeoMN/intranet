@@ -48,6 +48,8 @@ function flash_alert(): string {
 function cascadePositionsForProfile(array $positionsByDept, string $mode, ?int $initialDept = null, ?int $initialPos = null): string {
     $positionsJson = json_encode($positionsByDept);
     $disabled = ($mode === 'view') ? 'true' : 'false';
+    $initialDeptJs = $initialDept ? $initialDept : 'null';
+    $initialPosJs = $initialPos ? $initialPos : 'null';
     
     return <<<HTML
     <script>
@@ -81,8 +83,8 @@ function cascadePositionsForProfile(array $positionsByDept, string $mode, ?int $
                 deptSelect.disabled = true;
                 posSelect.disabled = true;
                 // Show current values in view mode
-                if ($initialDept && $initialPos) {
-                    updatePositions($initialDept, $initialPos);
+                if ($initialDeptJs && $initialPosJs) {
+                    updatePositions($initialDeptJs, $initialPosJs);
                 }
             } else {
                 // Enable cascade in create/edit modes
@@ -91,8 +93,8 @@ function cascadePositionsForProfile(array $positionsByDept, string $mode, ?int $
                 });
                 
                 // Initialize with current values in edit mode
-                if ($initialDept && $initialPos) {
-                    updatePositions($initialDept, $initialPos);
+                if ($initialDeptJs && $initialPosJs) {
+                    updatePositions($initialDeptJs, $initialPosJs);
                 }
             }
         });

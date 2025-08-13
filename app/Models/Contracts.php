@@ -9,7 +9,7 @@ class Contracts extends Model {
     protected static array  $fillable = [
       'id_contract',
       'id_employee_fk',
-      'number_payroll_contract',
+      'number_payrroll_contract',
       'code_employee_snapshot',
       'id_contract_type_fk',
       'id_payroll_scheme_fk',

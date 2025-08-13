@@ -50,4 +50,66 @@ class Contracts extends Model {
         $st->execute();
         return (int)$pdo->lastInsertId();
     }
+
+    /**
+     * Find contract by employee ID.
+     * @param int $id_employee Employee ID.
+     * @return array|null Contract data or null if not found.
+     */
+    public static function findByEmployee(int $id_employee): ?array {
+        return static::getByEmployeeId($id_employee);
+    }
+
+    /**
+     * Check if contract exists for employee ID.
+     * @param int $id_employee Employee ID.
+     * @return bool True if contract exists, false otherwise.
+     */
+    public static function existsForEmployee(int $id_employee): bool {
+        $pdo = Database::pdo();
+        $sql = "SELECT 1 FROM " . static::$table . " WHERE id_employee_fk = :id_employee LIMIT 1";
+        $st = $pdo->prepare($sql);
+        $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
+        $st->execute();
+        return (bool)$st->fetch();
+    }
+
+    /**
+     * Update contract by employee ID.
+     * @param int $id_employee Employee ID.
+     * @param array $data Contract data to update.
+     * @return bool True if the contract was updated, false otherwise.
+     */
+    public static function updateByEmployeeId(int $id_employee, array $data): bool {
+        $pdo = Database::pdo();
+        $setClause = implode(', ', array_map(fn($key) => "$key = :$key", array_keys($data)));
+        $sql = "UPDATE " . static::$table . " SET $setClause WHERE id_employee_fk = :id_employee";
+        $st = $pdo->prepare($sql);
+        foreach ($data as $key => $value) {
+            $st->bindValue(':' . $key, $value);
+        }
+        $st->bindValue(':id_employee', $id_employee, \PDO::PARAM_INT);
+        return $st->execute();
+    }
+
+    /**
+     * Upsert contract (insert if not exists, update if exists).
+     * @param int $id_employee Employee ID.
+     * @param array $data Contract data.
+     * @return bool True if operation was successful, false otherwise.
+     */
+    public static function upsertForEmployee(int $id_employee, array $data): bool {
+        // Add employee FK to data
+        $data['id_employee_fk'] = $id_employee;
+        
+        if (static::existsForEmployee($id_employee)) {
+            // Update existing contract
+            unset($data['id_employee_fk']); // Don't update FK
+            return static::updateByEmployeeId($id_employee, $data);
+        } else {
+            // Insert new contract
+            $contractId = static::create($data);
+            return $contractId > 0;
+        }
+    }
 }

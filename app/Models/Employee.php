@@ -248,4 +248,48 @@ class Employee extends Model {
         }
         return $st->rowCount() > 0;
     }
+
+    /**
+     * Search employees by name or code (case-insensitive).
+     * @param string $q Search term.
+     * @return array Array of employees matching the search criteria.
+     * @description This function searches for employees by name or code using LIKE with wildcards.
+     * Returns id_employee, code_employee, name_employee, status_employee for each match.
+     */
+    public static function search(string $q): array {
+        $pdo = \Core\Database::pdo();
+        $searchTerm = '%' . strtolower(trim($q)) . '%';
+        $sql = '
+            SELECT 
+                id_employee, 
+                code_employee, 
+                name_employee, 
+                status_employee
+            FROM employee 
+            WHERE 
+                LOWER(name_employee) LIKE :search 
+                OR LOWER(code_employee) LIKE :search
+            ORDER BY name_employee
+            LIMIT 50';
+        $st = $pdo->prepare($sql);
+        $st->bindParam(':search', $searchTerm, \PDO::PARAM_STR);
+        $st->execute();
+        return $st->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+    }
+
+    /**
+     * Find a basic employee by ID without joins.
+     * @param int $id_employee Employee ID.
+     * @return array|null Basic employee data or null if not found.
+     * @description This function retrieves basic employee info without complex joins.
+     * Used when we need simple employee data without profile/contract requirements.
+     */
+    public static function findBasicById(int $id_employee): ?array {
+        $pdo = \Core\Database::pdo();
+        $sql = 'SELECT * FROM employee WHERE id_employee = :id_employee LIMIT 1';
+        $st = $pdo->prepare($sql);
+        $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
 }

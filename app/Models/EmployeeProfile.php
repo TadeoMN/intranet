@@ -76,4 +76,48 @@ class EmployeeProfile extends Model {
         $st->bindValue(':id_employee', $id_employee, \PDO::PARAM_INT);
         return $st->execute();
     }
+
+    /**
+     * Find employee profile by employee ID.
+     * @param int $id_employee Employee ID.
+     * @return array|null Employee profile data or null if not found.
+     */
+    public static function findByEmployee(int $id_employee): ?array {
+        return static::getByEmployeeId($id_employee);
+    }
+
+    /**
+     * Check if employee profile exists for employee ID.
+     * @param int $id_employee Employee ID.
+     * @return bool True if profile exists, false otherwise.
+     */
+    public static function existsForEmployee(int $id_employee): bool {
+        $pdo = \Core\Database::pdo();
+        $sql = "SELECT 1 FROM " . static::$table . " WHERE id_employee_fk = :id_employee LIMIT 1";
+        $st = $pdo->prepare($sql);
+        $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
+        $st->execute();
+        return (bool)$st->fetch();
+    }
+
+    /**
+     * Upsert employee profile (insert if not exists, update if exists).
+     * @param int $id_employee Employee ID.
+     * @param array $data Employee profile data.
+     * @return bool True if operation was successful, false otherwise.
+     */
+    public static function upsertForEmployee(int $id_employee, array $data): bool {
+        // Add employee FK to data
+        $data['id_employee_fk'] = $id_employee;
+        
+        if (static::existsForEmployee($id_employee)) {
+            // Update existing profile
+            unset($data['id_employee_fk']); // Don't update FK
+            return static::updateByEmployeeId($id_employee, $data);
+        } else {
+            // Insert new profile
+            $profileId = static::create($data);
+            return $profileId > 0;
+        }
+    }
 }

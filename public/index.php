@@ -37,7 +37,13 @@
   $router->post('/employee/store', 'EmployeeController@storeEmployee');
   $router->post('/employee/update/{id}', 'EmployeeController@updateEmployee');
   $router->get('/api/employee/{id}', 'EmployeeController@showEmployee');
-  $router->get('/employees/profile/{id}', 'EmployeeController@showProfileEmployee');
+  
+  // Employee Profile Routes (3-mode system)
+  $router->get('/employee/profile/{id}', 'EmployeeController@profile');
+  $router->get('/employee/profile/create/{id}', 'EmployeeController@profileCreate');
+  $router->post('/employee/profile/store/{id}', 'EmployeeController@profileStore');
+  $router->post('/employee/profile/update/{id}', 'EmployeeController@profileUpdate');
+  $router->get('/api/employees/search', 'EmployeeController@search');
 
   $router->get('/employees/edit/{id}', 'EmployeeController@editEmployee');
 

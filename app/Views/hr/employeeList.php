@@ -243,7 +243,7 @@
             <?php endif; ?>
           </td>
           <td class="text-center"> <!-- Ver Perfil/Contrato -->
-            <a href="/employees/profile/<?= $employee['id_employee'] ?>"
+            <a href="/employee/profile/<?= $employee['id_employee'] ?>"
                 class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-title="Ver Perfil/Contrato">
                 <i class="fa-solid fa-user tl-icon-xl"></i>
             </a>

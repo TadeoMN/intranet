@@ -202,17 +202,185 @@ class EmployeeController {
         return redirect('/employees/list?' . http_build_query($_GET));
     }
 
-    public function showProfileEmployee(int $id_employee) {
-        $profile = EmployeeProfile::getByEmployeeId($id_employee);
-        $contract = Contracts::getByEmployeeId($id_employee);
-        $employee = Employee::findById($id_employee);
-
-        // mandar error si perfil y contrato no existen
-        if (!$contract || !$profile) {
-            flash('error', 'Perfil no encontrado', 'El perfil del empleado solicitado no existe.');
+    /**
+     * Show employee profile in view mode.
+     * This is the main profile method that loads employee, profile, and contract data.
+     * If profile/contract don't exist, it still shows the view but indicates missing data.
+     */
+    public function profile(int $id_employee) {
+        // Load basic employee data (required)
+        $employee = Employee::findBasicById($id_employee);
+        if (!$employee) {
+            flash('error', 'Empleado no encontrado', 'El empleado solicitado no existe.');
             return redirect('/employees/list');
         }
-        return view('hr/employeeProfile', compact('profile', 'contract', 'employee'));
+
+        // Load profile and contract (optional)
+        $profile = EmployeeProfile::findByEmployee($id_employee);
+        $contract = Contracts::findByEmployee($id_employee);
+
+        // Load catalogs for selects
+        $departments = Department::all();
+        $positions = Positions::all();
+        $positionsByDept = [];
+        foreach ($positions as $position) {
+            $positionsByDept[$position['id_department_fk']][] = [
+                'id_position' => $position['id_position'],
+                'name_position' => $position['name_position']
+            ];
+        }
+
+        // Determine current department and position
+        $currentDept = null;
+        $currentPos = null;
+        if ($profile) {
+            // Get department from employee's current position
+            foreach ($positions as $pos) {
+                if ($pos['id_position'] == $employee['id_position_fk']) {
+                    $currentDept = $pos['id_department_fk'];
+                    $currentPos = $pos['id_position'];
+                    break;
+                }
+            }
+        }
+
+        $mode = 'view';
+        return view('hr/employeeProfile', compact(
+            'mode', 'employee', 'profile', 'contract', 
+            'departments', 'positionsByDept', 'currentDept', 'currentPos'
+        ));
+    }
+
+    /**
+     * Show employee profile in create mode.
+     */
+    public function profileCreate(int $id_employee) {
+        // Load basic employee data (required)
+        $employee = Employee::findBasicById($id_employee);
+        if (!$employee) {
+            flash('error', 'Empleado no encontrado', 'El empleado solicitado no existe.');
+            return redirect('/employees/list');
+        }
+
+        // Initialize empty profile and contract for create mode
+        $profile = null;
+        $contract = null;
+
+        // Load catalogs for selects
+        $departments = Department::all();
+        $positions = Positions::all();
+        $positionsByDept = [];
+        foreach ($positions as $position) {
+            $positionsByDept[$position['id_department_fk']][] = [
+                'id_position' => $position['id_position'],
+                'name_position' => $position['name_position']
+            ];
+        }
+
+        $currentDept = null;
+        $currentPos = null;
+        $mode = 'create';
+        
+        return view('hr/employeeProfile', compact(
+            'mode', 'employee', 'profile', 'contract', 
+            'departments', 'positionsByDept', 'currentDept', 'currentPos'
+        ));
+    }
+
+    /**
+     * Store new employee profile and contract.
+     */
+    public function profileStore(int $id_employee) {
+        // Validate employee exists
+        $employee = Employee::findBasicById($id_employee);
+        if (!$employee) {
+            flash('error', 'Empleado no encontrado', 'El empleado solicitado no existe.');
+            return redirect('/employees/list');
+        }
+
+        // Validate required fields
+        $profileData = [
+            'gender_employee_profile' => $_POST['gender_employee_profile'] ?? '',
+            'marital_status_employee_profile' => $_POST['marital_status_employee_profile'] ?? 'SOLTERO',
+            'birthdate_employee_profile' => $_POST['birthdate_employee_profile'] ?? null,
+            'curp_employee_profile' => $_POST['curp_employee_profile'] ?? null,
+            'ssn_employee_profile' => $_POST['ssn_employee_profile'] ?? null,
+            'account_number_employee_profile' => $_POST['account_number_employee_profile'] ?? null,
+            'bank_employee_profile' => $_POST['bank_employee_profile'] ?? null,
+            'phone_employee_profile' => $_POST['phone_employee_profile'] ?? null,
+            'mobile_employee_profile' => $_POST['mobile_employee_profile'] ?? null,
+            'email_employee_profile' => $_POST['email_employee_profile'] ?? null,
+            'address_employee_profile' => $_POST['address_employee_profile'] ?? null,
+            'emergency_contact_employee_profile' => $_POST['emergency_contact_employee_profile'] ?? null,
+            'emergency_phone_employee_profile' => $_POST['emergency_phone_employee_profile'] ?? null,
+            'emergency_relationship_employee_profile' => $_POST['emergency_relationship_employee_profile'] ?? null,
+        ];
+
+        // Validate contract data if provided
+        $contractData = [];
+        if (!empty($_POST['number_payroll_contract'])) {
+            $contractData = [
+                'number_payroll_contract' => (int)$_POST['number_payroll_contract'],
+                'id_contract_type_fk' => (int)$_POST['id_contract_type_fk'],
+                'id_payroll_scheme_fk' => (int)$_POST['id_payroll_scheme_fk'],
+                'start_date_contract' => $_POST['start_date_contract'],
+                'trial_period_contract' => $_POST['trial_period_contract'] ?? null,
+                'end_date_contract' => $_POST['end_date_contract'] ?? null,
+                'salary_contract' => (float)$_POST['salary_contract'],
+                'is_active' => 1
+            ];
+        }
+
+        try {
+            // Store profile
+            $profileSuccess = EmployeeProfile::upsertForEmployee($id_employee, $profileData);
+            
+            // Store contract if provided
+            $contractSuccess = true;
+            if (!empty($contractData)) {
+                $contractSuccess = Contracts::upsertForEmployee($id_employee, $contractData);
+            }
+
+            if ($profileSuccess && $contractSuccess) {
+                flash('success', 'Perfil creado', 'El perfil del empleado ha sido creado exitosamente.');
+            } else {
+                flash('error', 'Error al crear perfil', 'No se pudo crear el perfil. Inténtalo de nuevo.');
+            }
+        } catch (\Exception $e) {
+            flash('error', 'Error al crear perfil', 'Ocurrió un error: ' . $e->getMessage());
+        }
+
+        return redirect("/employee/profile/$id_employee");
+    }
+
+    /**
+     * Update existing employee profile and contract.
+     */
+    public function profileUpdate(int $id_employee) {
+        // This is the same logic as profileStore since we use upsert
+        return $this->profileStore($id_employee);
+    }
+
+    /**
+     * Search employees for the modal (API endpoint).
+     */
+    public function search() {
+        header('Content-Type: application/json');
+        
+        $q = $_GET['q'] ?? '';
+        if (strlen(trim($q)) < 2) {
+            echo json_encode([]);
+            return;
+        }
+
+        $employees = Employee::search($q);
+        
+        // Add has_profile flag to each employee
+        foreach ($employees as &$employee) {
+            $employee['has_profile'] = EmployeeProfile::existsForEmployee($employee['id_employee']);
+        }
+
+        echo json_encode($employees);
     }
 
     public function createEmployee() {

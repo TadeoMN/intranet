@@ -44,6 +44,62 @@ function flash_alert(): string {
     </script>
     HTML;
 }
+/* ------------ helper para selects en cascada ------------- */
+function cascadePositionsForProfile(array $positionsByDept, string $mode, ?int $initialDept = null, ?int $initialPos = null): string {
+    $positionsJson = json_encode($positionsByDept);
+    $disabled = ($mode === 'view') ? 'true' : 'false';
+    
+    return <<<HTML
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const positionsByDept = $positionsJson;
+            const deptSelect = document.getElementById('id_department_fk');
+            const posSelect = document.getElementById('id_position_fk');
+            const mode = '$mode';
+            
+            function updatePositions(deptId, selectedPosId = null) {
+                posSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+                
+                if (deptId && positionsByDept[deptId]) {
+                    positionsByDept[deptId].forEach(function(pos) {
+                        const option = document.createElement('option');
+                        option.value = pos.id_position;
+                        option.textContent = pos.name_position;
+                        if (selectedPosId && pos.id_position == selectedPosId) {
+                            option.selected = true;
+                        }
+                        posSelect.appendChild(option);
+                    });
+                }
+                
+                if (mode === 'view') {
+                    posSelect.disabled = true;
+                }
+            }
+            
+            if (mode === 'view') {
+                deptSelect.disabled = true;
+                posSelect.disabled = true;
+                // Show current values in view mode
+                if ($initialDept && $initialPos) {
+                    updatePositions($initialDept, $initialPos);
+                }
+            } else {
+                // Enable cascade in create/edit modes
+                deptSelect.addEventListener('change', function() {
+                    updatePositions(this.value);
+                });
+                
+                // Initialize with current values in edit mode
+                if ($initialDept && $initialPos) {
+                    updatePositions($initialDept, $initialPos);
+                }
+            }
+        });
+    </script>
+    HTML;
+}
+
 /* ------------ mensaje de cierre de sesión ------------- */
 function flash_logout(): string {
     return <<<HTML

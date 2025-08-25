@@ -17,7 +17,7 @@ class Contracts extends Model {
       'trial_period_contract',
       'end_date_contract',
       'salary_contract',
-      'termination_clause_contract',
+      'termination_reason_contract',
       'is_active',
     ];
 
@@ -28,7 +28,7 @@ class Contracts extends Model {
      */
     public static function getByEmployeeId(int $id_employee): ?array {
         $pdo = Database::pdo();
-        $sql = 
+        $sql =
             "   SELECT *
                 FROM " . static::$table . "
                 INNER JOIN contract_type ON contracts.id_contract_type_fk = contract_type.id_contract_type
@@ -53,5 +53,25 @@ class Contracts extends Model {
         }
         $st->execute();
         return (int)$pdo->lastInsertId();
+    }
+    public static function getContractsEnums($column): array {
+        $pdo = \Core\Database::pdo();
+        $sql = "SHOW COLUMNS FROM " . static::$table . " LIKE '{$column}'";
+        $st = $pdo->prepare($sql);
+        $st->execute();
+        $result = $st->fetchAll(\PDO::FETCH_ASSOC);
+        if ($result) {
+            $enums = [];
+            foreach ($result as $row) {
+                preg_match('/^enum\((.*)\)$/', $row['Type'], $matches);
+                if (isset($matches[1])) {
+                    $enums[$row['Field']] = array_map(function($value) {
+                        return trim($value, "'");
+                    }, explode(',', $matches[1]));
+                }
+            }
+            return $enums[$column] ?? [];
+        }
+        return [];
     }
 }

@@ -44,6 +44,43 @@ function flash_alert(): string {
     </script>
     HTML;
 }
+/* ------------ mensajes flash con botones de acción ------------- */
+function flash_button(string $type=null, string $title=null, string $text='', string $buttonText=null, string $buttonUrl=null) {
+    if($type=== null) {
+        if(!isset($_SESSION['flash_button'])) return null;
+        $f = $_SESSION['flash_button'];
+        unset($_SESSION['flash_button']);
+        return $f;
+    }
+    $_SESSION['flash_button'] = compact('type', 'title', 'text', 'buttonText', 'buttonUrl');
+}
+/* ------------ imprime si hay mensaje flash con botones de acción ------------- */
+function flash_alert_button(): string {
+    if(!$f = flash_button()) return '';
+    $type = $f['type'] ?? 'info';
+    $title = addslashes($f['title'] ?? '');
+    $text = addslashes($f['text'] ?? '');
+    $buttonText = addslashes($f['buttonText'] ?? 'Aceptar');
+    $buttonUrl = htmlspecialchars($f['buttonUrl'] ?? '#', ENT_QUOTES, 'UTF-8');
+    return <<<HTML
+    <script>
+        Swal.fire({
+            icon: '$type',
+            title: '$title',
+            text: '$text',
+            showCancelButton: true,
+            confirmButtonText: '$buttonText',
+            cancelButtonText: 'Cancelar',
+        }).then(result => {
+            if (result.isConfirmed) {
+                if ('$buttonUrl' !== '#') {
+                    window.location.href = '$buttonUrl';
+                }
+            }
+        });
+    </script>
+    HTML;
+}
 /* ------------ mensaje de cierre de sesión ------------- */
 function flash_logout(): string {
     return <<<HTML

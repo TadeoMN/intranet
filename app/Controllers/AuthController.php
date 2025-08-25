@@ -34,7 +34,6 @@ class AuthController {
     }
 
     public function logout(){
-        flash('info','Sesión cerrada','Has salido correctamente');
         Auth::logout();
         return redirect('/');
     }

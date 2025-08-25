@@ -248,32 +248,4 @@ class Employee extends Model {
         }
         return $st->rowCount() > 0;
     }
-    /**
-     * Get the employee profile enums for a specific column.
-     * @param string $column The column name to get enums for.
-     * @return array An array of enum values for the specified column.
-     * @throws \Exception If there is an error during the query.
-     * @description This function retrieves the enum values for a specific column in the employee profile table.
-     * It returns an array of enum values or an empty array if the column does not exist or has no enum values.
-     */
-    public static function getEmployeeProfileEnums($column): array {
-        $pdo = \Core\Database::pdo();
-        $sql = "SHOW COLUMNS FROM employee_profile LIKE '{$column}'";
-        $st = $pdo->prepare($sql);
-        $st->execute();
-        $result = $st->fetchAll(\PDO::FETCH_ASSOC);
-        if ($result) {
-            $enums = [];
-            foreach ($result as $row) {
-                preg_match('/^enum\((.*)\)$/', $row['Type'], $matches);
-                if (isset($matches[1])) {
-                    $enums[$row['Field']] = array_map(function($value) {
-                        return trim($value, "'");
-                    }, explode(',', $matches[1]));
-                }
-            }
-            return $enums[$column] ?? [];
-        }
-        return [];
-    }
 }

@@ -238,9 +238,19 @@ CREATE TABLE leave_type (
 DROP TABLE IF EXISTS incident_type;
 CREATE TABLE incident_type (
   id_incident_type SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  code_incident_type VARCHAR(20) NOT NULL UNIQUE,
   name_incident_type VARCHAR(100) NOT NULL UNIQUE,
-  description_incident_type TEXT
+  description_incident_type TEXT,
+  severity_incident_type ENUM('BAJA', 'MEDIA', 'ALTA', 'CRITICA') NOT NULL DEFAULT 'BAJA',
+  action_incident_type VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE incident_type
+  ADD COLUMN code_incident_type VARCHAR(20) NOT NULL UNIQUE FIRST;
+ALTER TABLE incident_type
+  ADD COLUMN severity_incident_type ENUM('BAJA', 'MEDIA', 'ALTA', 'CRITICA') NOT NULL DEFAULT 'BAJA' AFTER description_incident_type;  
+ALTER TABLE incident_type
+  ADD COLUMN action_incident_type VARCHAR(100) NOT NULL AFTER severity_incident_type;
 
 -- --------------------
 -- 2.2 Tabla employees
@@ -532,12 +542,12 @@ INSERT INTO `leave_type` (`code_leave_type`, `name_leave_type`, `description_lea
 ('PER', 'PERSONAL', 'Permiso personal', 1, 3);
 
 -- Insertar tipos de incidencia
-INSERT INTO `incident_type` (`name_incident_type`, `description_incident_type`) VALUES
-('RETRASO', 'Llegada tardía al trabajo'),
-('FALTA', 'Ausencia no justificada'),
-('ACCIDENTE', 'Accidente laboral'),
-('COMPORTAMIENTO', 'Problema de comportamiento'),
-('RENDIMIENTO', 'Bajo rendimiento laboral');
+INSERT INTO `incident_type` (`code_incident_type`, `name_incident_type`, `description_incident_type`, `severity_incident_type`, `action_incident_type`) VALUES
+('INC-001', 'RETRASO', 'Incidencia por llegar tarde al trabajo', 'BAJA', 'Advertencia verbal'),
+('INC-002', 'FALTA', 'Incidencia por falta sin justificación', 'MEDIA', 'Descuento de salario'),
+('INC-003', 'ACCIDENTE', 'Incidencia por accidente en el trabajo', 'ALTA', 'Investigación de incidente'),
+('INC-004', 'COMPORTAMIENTO', 'Incidencia por mal comportamiento', 'MEDIA', 'Plan de mejora'),
+('INC-005', 'RENDIMIENTO', 'Incidencia por bajo rendimiento', 'BAJA', 'Capacitación adicional');
 
 -- Insertar empleados básicos del sistema
 INSERT INTO `employee` (`name_employee`, `date_hired`, `type_employee`, `id_position_fk`) VALUES

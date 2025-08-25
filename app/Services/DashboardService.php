@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\UserSession;
+use App\Models\IncidentType;
 use App\Models\Department;
 use App\Models\Positions;
 use Core\Cache;
@@ -48,6 +49,8 @@ class DashboardService {
         $history = UserSession::historySession();
         $users = User::findAllActive();
 
+        $incidentTypes = IncidentType::all();
+
         $departments = Department::all();
         $positions = Positions::all();
         $positionsByDepartment = [];
@@ -64,6 +67,7 @@ class DashboardService {
             'session' => $session,
             'active' => $active,
             'history' => $history,
+            'incidentTypes' => $incidentTypes,
             'departments' => $departments,
             'positionsByDepartment' => $positionsByDepartment
         ];

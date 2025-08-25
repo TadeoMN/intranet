@@ -100,7 +100,6 @@ hr {
 }
 .table-responsive {
   position: relative;
-  max-width: 80%;
   max-height: 70vh;
   overflow-y: auto;
 }
@@ -120,10 +119,17 @@ table thead th {
 .nav-link {
   padding: 20px .5rem!important;
 }
+.dropdown-menu {
+  border: 0 solid var(--bs-dropdown-border-color);
+}
 .dropdown-divider {
   border-top: 5px solid var(--bs-dropdown-divider-bg)!important;
 }
 
+/**
+  * Custom Styles for TopLabel
+  * This section contains custom styles for the TopLabel application.
+  */
 .background-login{
   display: flex;
   flex-direction: column;
@@ -173,15 +179,28 @@ table thead th {
 }
 @media (min-width: 992px) {
   .tl-grid-container {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
   }
 }
+
+.tl-grid-template-buttons-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .5rem;
+}
+@media (min-width: 992px) {
+  .tl-grid-template-buttons-actions {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
 .tl-grid-container div a {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: center;
   text-decoration: none;
   color: var(--tl-text-light-color);
 }

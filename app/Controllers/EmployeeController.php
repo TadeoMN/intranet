@@ -218,9 +218,6 @@ class EmployeeController {
         $departments = Department::all();
         $positions = Positions::all();
         $positionsByDepartment = [];
-        $bloodTypes = Employee::getEmployeeProfileEnums('blood_type_employee_profile');
-        $genders = Employee::getEmployeeProfileEnums('gender_employee_profile');
-        $maritalStatuses = Employee::getEmployeeProfileEnums('marital_status_employee_profile');
 
         foreach ($positions as $position) {
             $positionsByDepartment[$position['id_department_fk']][] = [
@@ -228,42 +225,48 @@ class EmployeeController {
                 'name_position' => $position['name_position']
             ];
         }
+
+        $bloodTypes = EmployeeProfile::getEmployeeProfileEnums('blood_type_employee_profile');
+        $genders = EmployeeProfile::getEmployeeProfileEnums('gender_employee_profile');
+        $maritalStatuses = EmployeeProfile::getEmployeeProfileEnums('marital_status_employee_profile');
+        $contractTypes = Contracts::getContractsEnums('type_contract');
+        $payrollSchemes = Contracts::getContractsEnums('payroll_scheme_contract');
 
         if (!$contract || !$profile) {
-            flash('error', 'Perfil no encontrado', 'El perfil del empleado solicitado no existe.');
+            flash_button('warning', 'Perfil no encontrado', 'El empleado aun no cuenta con un perfil. ¿Desea crear el perfil?', 'Aceptar', '/employees/profile/create/' . $id_employee);
             return redirect('/employees/list');
         }
-        return view('hr/employeeProfile', compact('profile', 'contract', 'employee', 'departments', 'positionsByDepartment', 'bloodTypes', 'genders', 'maritalStatuses'));
+        return view('hr/employeeProfile', compact('profile', 'contract', 'employee', 'departments', 'positionsByDepartment', 'bloodTypes', 'genders', 'maritalStatuses', 'contractTypes', 'payrollSchemes'));
     }
 
-    public function createEmployee() {
-        $departments = Department::all();
-        $positions = Positions::all();
-        $positionsByDepartment = [];
-        foreach ($positions as $position) {
-            $positionsByDepartment[$position['id_department_fk']][] = [
-                'id_position' => $position['id_position'],
-                'name_position' => $position['name_position']
-            ];
-        }
-        return view('hr/employeeCreate', compact('departments', 'positionsByDepartment'));
-    }
-
-    public function editEmployee(int $id_employee) {
+    /**
+     * Show the form to create a new employee profile.
+     * @param int $id_employee Employee ID.
+     * @return array Rendered view for creating an employee profile.
+     * @throws \Exception If the employee is not found.
+     * @route /employee/profile/create/{id_employee}
+     * @method GET
+     * @description This function displays the form to create a new employee profile for a specific employee.
+     */
+    public function createProfileEmployee(int $id_employee) {
         $employee = Employee::findById($id_employee);
-        if (!$employee) {
-            flash('error', 'Empleado no encontrado', 'El empleado solicitado no existe.');
-            return redirect('/employees/list');
-        }
+        $profile = [];
+        $contract = [];
         $departments = Department::all();
         $positions = Positions::all();
         $positionsByDepartment = [];
+
         foreach ($positions as $position) {
             $positionsByDepartment[$position['id_department_fk']][] = [
                 'id_position' => $position['id_position'],
                 'name_position' => $position['name_position']
             ];
         }
-        return view('hr/employeeEdit', compact('employee', 'departments', 'positionsByDepartment'));
+
+        if (!$employee) {
+            flash('error', 'Empleado no encontrado', 'El empleado especificado no existe.');
+            return redirect('/employees/list');
+        }
+        return view('hr/employeeProfile', compact('employee', 'profile', 'contract', 'departments', 'positionsByDepartment'));
     }
 }

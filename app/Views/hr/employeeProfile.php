@@ -1,14 +1,12 @@
-<?php
+<?php ob_start(); ?>
 
-use App\Models\Employee;
-use App\Models\Model;
+  <!-- Scrollable Container -->
+  <div class="container-fluid container-md tl-scroll my-2 px-1" id="scrollableContainer">
+    <!-- Card Container -->
+    <div class="card shadow-sm">
 
- ob_start(); ?>
-
-  <div class="container-fluid container-md tl-scroll my-2 px-1" id="scrollableContainer"> <!-- Scrollable Container -->
-    <div class="card shadow-sm"> <!-- Card Container -->
-
-      <div class="card-header bg-dark text-white row py-1 align-items-center m-0"> <!-- Card Header -->
+      <!-- Card Header -->
+      <div class="card-header bg-dark text-white row m-0 py-1 align-items-center">
         <div class="col-12 py-2 px-1">
           <div class="input-group">
             <button class="btn btn-secondary" id="listEmployeesButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Lista de Empleados" onclick="window.location.href='/employees/list'">
@@ -26,12 +24,15 @@ use App\Models\Model;
             </button>
           </div>
         </div>
+      </div>
+      <!-- End Card Header -->
 
-      </div> <!-- End Card Header -->
-
-      <div class="card-body"> <!-- Card Body -->
-        <div class="row py-1 g-2"> <!-- Employee Profile Header -->
-          <div class="col-12 mb-2"> <!-- Employee Name and Department -->
+      <!-- Card Body -->
+      <form class="card-body" id="employeeProfileForm">
+        <!-- Employee Profile Header -->
+        <div class="row py-1 g-2">
+          <!-- Employee Name and Department -->
+          <div class="col-12 mb-2">
               <h5 class="card-title">
                 <strong><?= htmlspecialchars($employee['name_employee']) ?></strong>
               </h5>
@@ -40,129 +41,121 @@ use App\Models\Model;
               </p>
           </div>
 
-          <div class="col-8 col-md-4 col-xl-3 m-auto"> <!-- Employee Image -->
+          <!-- Employee Image -->
+          <div class="col-8 col-md-4 col-xl-3 m-auto">
             <img src="/assets/images/employeeProfile/<?= $employee['image_employee_profile'] ? htmlspecialchars($employee['image_employee_profile']) : '/assets/images/default-profile.jpg' ?>"
             alt="Foto de <?= $employee['name_employee'] ? $employee['name_employee'] : 'Empleado' ?>"
             class="img-fluid rounded-2 border">
           </div>
 
-          <div class="col-12 col-md-8 col-xl-9 d-flex align-items-center justify-content-center"> <!-- Employee Actions -->
-            <div class="tl-grid-container">
-              <div>  <!-- Incidencias -->
+          <!-- Employee Profile Details -->
+          <div class="col-12 col-md-8 col-xl-9 d-flex flex-column align-items-center justify-content-center">
+            <div class="tl-grid-container w-100 mb-3">
+              <div>
                 <a href="/incidents/list" class="btn btn-action" id="viewIncidentsButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ver Incidencias">
                   <i class="fa-solid fa-triangle-exclamation tl-icon-xl"></i>
                   <span>Incidencias</span>
                 </a>
               </div>
 
-              <div>  <!-- Calificaciones -->
-                <a href="/evaluations/list" class="btn btn-action" id="viewCalificationsButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ver Calificaciones">
-                  <i class="fa-solid fa-star tl-icon-xl"></i>
-                  <span>Calificaciones</span>
+              <div>
+                <a href="/employees/edit/<?= $employee['id_employee'] ?>" class="btn btn-action" id="editEmployeeButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar Perfil">
+                  <i class="fa-solid fa-pen-to-square tl-icon-xl"></i>
+                  <span>Editar</span>
                 </a>
               </div>
 
-              <div> <!-- Permisos -->
-                <a href="/permissions/list" class="btn btn-action" id="viewPermissionsButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ver Permisos">
-                  <i class="fa-solid fa-handshake tl-icon-xl"></i>
-                  <span>Permisos</span>
-                </a>
-              </div>
-
-              <div> <!-- Dar de Baja -->
-                <a href="/employees/terminate/<?= $employee['id_employee'] ?>" class="btn btn-action" id="terminateEmployeeButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Dar de Baja Empleado">
-                  <i class="fa-solid fa-user-slash tl-icon-xl"></i>
-                  <span>Baja</span>
+              <div>
+                <a href="/employees/delete/<?= $employee['id_employee'] ?>" class="btn btn-action" id="deleteEmployeeButton" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar Empleado">
+                  <i class="fa-solid fa-user-slash"></i>
+                  <span>Eliminar</span>
                 </a>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="row py-1 g-2"> <!-- Employee Profile Details -->
-          <div class="col-6 col-md-4"> <!-- Payroll Number -->
-            <div class="form-floating">
-              <input type="text" class="form-control" name="number_payroll_contract" id="number_payroll_contract" value="<?= htmlspecialchars($employee['number_payroll_contract']) ?>" readonly>
-              <label for="number_payroll_contract" class="form-label">Número de Nómina</label>
-            </div>
-          </div>
+            <div class="tl-grid-container w-100">
+              <!-- Payroll Number -->
+              <div class="form-floating">
+                <input type="text" class="form-control" name="number_payroll_contract" id="number_payroll_contract" value="<?= htmlspecialchars($employee['number_payroll_contract']) ?>" readonly>
+                <label for="number_payroll_contract" class="form-label">Número de Nómina</label>
+              </div>
+              
+              <!-- Employee Code -->
+              <div class="form-floating">
+                <input type="text" class="form-control" name="code_employee" id="code_employee" value="<?= htmlspecialchars($employee['code_employee']) ?>" readonly>
+                <label for="code_employee" class="form-label">Código de Empleado</label>
+              </div>
 
-          <div class="col-6 col-md-4"> <!-- Employee Code -->
-            <div class="form-floating">
-              <input type="text" class="form-control" name="code_employee" id="code_employee" value="<?= htmlspecialchars($employee['code_employee']) ?>" readonly>
-              <label for="code_employee" class="form-label">Código de Empleado</label>
-            </div>
-          </div>
+              <!-- Date Hired -->
+              <div class="form-floating">
+                <input type="text" class="form-control" name="date_hired" id="date_hired" value="<?= date('d/m/Y', strtotime($employee['date_hired'])) ?>" readonly>
+                <label for="date_hired" class="form-label">Fecha de Contratación</label>
+              </div>
+              
+              <!-- Status -->
+              <div class="form-floating">
+                <select class="form-select" name="status_employee" id="status_employee" disabled>
+                  <option value="ACTIVO" <?= $employee['status_employee'] === 'ACTIVO' ? 'selected' : '' ?>>ACTIVO</option>
+                  <option value="INACTIVO" <?= $employee['status_employee'] === 'INACTIVO' ? 'selected' : '' ?>>INACTIVO</option>
+                  <option value="SUSPENDIDO" <?= $employee['status_employee'] === 'SUSPENDIDO' ? 'selected' : '' ?>>SUSPENDIDO</option>
+                </select>
+                <label for="status_employee" class="form-label">Estatus</label>
+              </div>
 
-          <div class="col-6 col-md-4"> <!-- Date Hired -->
-            <div class="form-floating">
-              <input type="text" class="form-control" name="date_hired" id="date_hired" value="<?= date('d/m/Y', strtotime($employee['date_hired'])) ?>" readonly>
-              <label for="date_hired" class="form-label">Fecha de Contratación</label>
-            </div>
-          </div>
+              <!-- Employee Type -->
+              <div class="form-floating">
+                <select class="form-select" name="type_employee" id="type_employee" disabled>
+                  <option value="OPERATIVO" <?= $employee['type_employee'] === 'OPERATIVO' ? 'selected' : '' ?>>OPERATIVO</option>
+                  <option value="ADMINISTRATIVO" <?= $employee['type_employee'] === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
+                </select>
+                <label for="type_employee" class="form-label">Tipo de Empleado</label>
+              </div>
 
-          <div class="col-6 col-md-4"> <!-- Status -->
-            <div class="form-floating">
-              <select class="form-select" name="status_employee" id="status_employee" disabled>
-                <option value="ACTIVO" <?= $employee['status_employee'] === 'ACTIVO' ? 'selected' : '' ?>>ACTIVO</option>
-                <option value="INACTIVO" <?= $employee['status_employee'] === 'INACTIVO' ? 'selected' : '' ?>>INACTIVO</option>
-                <option value="SUSPENDIDO" <?= $employee['status_employee'] === 'SUSPENDIDO' ? 'selected' : '' ?>>SUSPENDIDO</option>
-              </select>
-              <label for="status_employee" class="form-label">Estatus</label>
-            </div>
-          </div>
+              <!-- Seniority -->
+              <div class="form-floating">
+                <input type="text" class="form-control" name="seniority_employee" id="seniority_employee" value="<?= htmlspecialchars($employee['seniority_employee']) ?> años" readonly>
+                <label for="seniority_employee" class="form-label">Antigüedad</label>
+              </div>
 
-          <div class="col-6 col-md-4"> <!-- Employee Type -->  
-            <div class="form-floating">
-              <select class="form-select" name="type_employee" id="type_employee" disabled>
-                <option value="OPERATIVO" <?= $employee['type_employee'] === 'OPERATIVO' ? 'selected' : '' ?>>OPERATIVO</option>
-                <option value="ADMINISTRATIVO" <?= $employee['type_employee'] === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
-              </select>
-              <label for="type_employee" class="form-label">Tipo de Empleado</label>
-            </div>
-          </div>
-
-          <div class="col-6 col-md-4"> <!-- Seniority -->
-            <div class="form-floating">
-              <input type="text" class="form-control" name="seniority_employee" id="seniority_employee" value="<?= htmlspecialchars($employee['seniority_employee']) ?> años" readonly>
-              <label for="seniority_employee" class="form-label">Antigüedad</label>
-            </div>
-          </div>
-
-          <div class="col-6 d-none"> <!-- Department -->
-            <div class="form-floating">
-              <select name="name_department" id="name_department" class="form-select" disabled>
-                <option value="" disabled selected>Seleccione un departamento</option>
-                <?php foreach ($departments as $department): ?>
-                  <option value="<?= $department['id_department'] ?>" <?= $employee['id_department_fk'] === $department['id_department'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($department['name_department']) ?>
+              <!-- Department -->
+              <div class="form-floating d-none">
+                <select name="name_department" id="name_department" class="form-select" disabled>
+                  <option value="" disabled selected>Seleccione un departamento</option>
+                  <?php foreach ($departments as $department): ?>
+                    <option value="<?= $department['id_department'] ?>" <?= $employee['id_department_fk'] === $department['id_department'] ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($department['name_department']) ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+                <label for="name_department" class="form-label">Departamento</label>
+              </div>
+              
+              <!-- Position -->
+              <div class="form-floating d-none">
+                <select name="name_position" id="name_position" class="form-select" disabled>
+                  <option value="<?= htmlspecialchars($employee['id_position_fk']) ?>" selected>
+                    <?= htmlspecialchars($employee['name_position']) ?>
                   </option>
-                <?php endforeach; ?>
-              </select>
-              <label for="name_department" class="form-label">Departamento</label>
-            </div>
-          </div>
-
-          <div class="col-6 d-none"> <!-- Position -->
-            <div class="form-floating">
-              <select name="name_position" id="name_position" class="form-select" disabled>
-                <option value="<?= htmlspecialchars($employee['id_position_fk']) ?>" selected>
-                  <?= htmlspecialchars($employee['name_position']) ?>
-                </option>
-              </select>
-              <label for="name_position" class="form-label">Puesto</label>
+                </select>
+                <label for="name_position" class="form-label">Puesto</label>
+              </div>
             </div>
           </div>
         </div>
+        <!-- End Employee Profile Header -->
 
         <div><hr></div> <!-- Divider -->
 
-        <div class="row py-1 g-2"> <!-- Personal Information Header -->
+        <!-- Personal Information Header -->
+        <div class="row py-1 g-2"> 
           <div class="col-12">
             <h5><strong>Información Personal</strong></h5>
           </div>
         </div>
-        <div class="row py-1 g-2"> <!-- Personal Information Details -->
+        <!-- End Personal Information Header -->
+
+        <!-- Personal Information Details -->
+        <div class="row py-1 g-2">
           <!-- Personal Information -->
           <div class="col-6 col-md-3">
             <div class="form-floating">
@@ -285,15 +278,20 @@ use App\Models\Model;
           <?php endif; ?>
           </div>
         </div>
+        <!-- End Personal Information Details -->
 
         <div><hr></div> <!-- Divider -->
 
-        <div class="row py-1"> <!-- Contact Information Header -->
+        <!-- Contact Information Header -->
+        <div class="row py-1"> 
           <div class="col-12">
             <h5><strong>Información de Contacto</strong></h5>
           </div>
         </div>
-        <div class="row py-1 g-2"> <!-- Contact Information Details -->
+        <!-- End Contact Information Header -->
+
+        <!-- Contact Information Details -->
+        <div class="row py-1 g-2">
           <!-- Contact Information -->
           <div class="col-6 col-md-4">
             <div class="form-floating">
@@ -347,15 +345,20 @@ use App\Models\Model;
             </div>
           </div>
         </div>
+        <!-- End Contact Information Details -->
 
         <div><hr></div> <!-- Divider -->
 
-        <div class="row py-1"> <!-- Contract Information Header -->
+        <!-- Contract Information Header -->
+        <div class="row py-1">
           <div class="col-12">
             <h5><strong>Información de Contrato</strong></h5>
           </div>
         </div>
-        <div class="row py-1 g-2"> <!-- Contract Information Details -->
+        <!-- End Contract Information Header -->
+
+        <!-- Contract Information Details -->
+        <div class="row py-1 g-2">
           <!-- Contract Information -->
           <div class="col-6 col-md-4">
             <div class="form-floating">
@@ -423,9 +426,12 @@ use App\Models\Model;
             </div>
           </div>
         </div>
-      </div> <!-- End Card Body -->
+        <!-- End Contract Information Details -->
+      </form>
+      <!-- End Card Body -->
 
-      <div class="card-footer text-center bg-dark text-white"> <!-- Card Footer -->
+      <!-- Card Footer -->
+      <div class="card-footer text-center bg-dark text-white">
         <div class="row py-1 g-2">
           <div class="col-12">
             <a class="btn btn-secondary" id="backToTopButton" data-bs-toggle="tooltip" data-bs-placement="top" title="Volver Arriba">
@@ -433,9 +439,11 @@ use App\Models\Model;
             </a>
           </div>
         </div>
-      </div> <!-- End Card Footer -->
-
-    </div> <!-- End Card Container -->
-  </div> <!-- End Scrollable Container -->
+      </div>
+      <!-- End Card Footer -->
+    </div>
+    <!-- End Card Container -->
+  </div>
+  <!-- End Scrollable Container -->
 
 <?php $content = ob_get_clean(); include __DIR__.'/../layouts/layout-main.php'; ?>

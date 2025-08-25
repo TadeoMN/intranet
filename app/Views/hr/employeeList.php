@@ -5,7 +5,7 @@
     <p class="text-center">Lista de empleados registrados en el sistema.</p>
   </div>
 
-  <div style="max-width: 80%; max-height: 60vh; overflow-y: auto; margin: 35px auto auto;">
+  <div class="container-fluid">
     <div class="row mx-0 mb-3 d-flex align-items-center p-0"> <!-- Search and Filter Controls -->
 
       <div class="py-1 col-sm-12 col-md-4 col-lg-2"> <!-- New Employee Button -->
@@ -82,7 +82,7 @@
     </div>
   </div>
 
-  <div class="table-responsive" style="max-width: 80%; max-height: 60vh; overflow-y: auto; margin: auto;">
+  <div class="container-fluid table-responsive">
     <table id="" class="table table-hover table-bordered">
       <thead class="table-group-divider align-middle text-center table-dark">
         <tr> <!-- Table headers / Encabezados de la tabla -->
@@ -167,7 +167,7 @@
               <i class="fa-solid <?= sortIcon('name_manager', $pagination['sort'], $pagination['order']) ?>"></i>
             </a>
           </th>
-          <th colspan="4">Acciones</th> <!-- Actions -->
+          <th>Acciones</th> <!-- Actions -->
         </tr>
       </thead>
       <tbody class="align-middle text-center">
@@ -221,38 +221,46 @@
             </td>
           <?php endif; ?>
           <td class="text-center"> <!-- Editar Empleado -->
-            <button class="btn btn-sm btn-primary tl-btn-edit-employee" data-id="<?= $employee['id_employee'] ?>"
-                data-bs-toggle="tooltip" data-bs-title="Editar">
-              <i class="fa-solid fa-pen-to-square tl-icon-xl"></i>
-            </button>
-          </td>
-          <td class="text-center"> <!-- Eliminar Empleado -->
-            <?php if ($employee['status_employee'] !== 'INACTIVO'): ?>
-            <form method="POST" action="/employee/delete/<?= $employee['id_employee'] ?>" class="d-inline form-delete-employee">
-              <button type="submit" class="btn btn-sm btn-danger" data-name="<?= htmlspecialchars($employee['name_employee']) ?>"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar">
-                <i class="fa-solid fa-trash tl-icon-xl"></i>
+            <div class="tl-grid-template-buttons-actions">
+              <button class="btn btn-sm btn-primary tl-btn-edit-employee" data-id="<?= $employee['id_employee'] ?>"
+                  data-bs-toggle="tooltip" data-bs-title="Editar">
+                <i class="fa-solid fa-pen-to-square tl-icon-xl"></i>
               </button>
-            </form>
-            <?php else: ?>
-              <div class="inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Empleado inactivo, no se puede eliminar">
-                <button class="btn btn-sm btn-danger disabled">
-                  <i class="fa-solid fa-trash tl-icon-xl"></i>
-                </button>
-              </div>
-            <?php endif; ?>
-          </td>
-          <td class="text-center"> <!-- Ver Perfil/Contrato -->
-            <a href="/employees/profile/<?= $employee['id_employee'] ?>"
+              
+              <?php if ($employee['status_employee'] !== 'INACTIVO'): ?>
+                <form method="POST" action="/employee/delete/<?= $employee['id_employee'] ?>" class="d-inline form-delete-employee">
+                  <button type="submit" class="btn btn-sm btn-danger" data-name="<?= htmlspecialchars($employee['name_employee']) ?>"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar">
+                    <i class="fa-solid fa-trash tl-icon-xl"></i>
+                  </button>
+                </form>
+              <?php else: ?>
+                <div class="inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Empleado inactivo, no se puede eliminar">
+                  <button class="btn btn-sm btn-danger disabled">
+                    <i class="fa-solid fa-trash tl-icon-xl"></i>
+                  </button>
+                </div>
+              <?php endif; ?>
+
+              <a href="/employees/profile/<?= $employee['id_employee'] ?>"
                 class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-title="Ver Perfil/Contrato">
                 <i class="fa-solid fa-user tl-icon-xl"></i>
-            </a>
-          </td>
-          <td class="text-center"> <!-- Ver Expediente -->
-            <a href="/employees/view/<?= $employee['id_employee'] ?>"
-                class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-title="Ver Expediente">
-                <i class="fa-solid fa-eye tl-icon-xl"></i>
-            </a>
+              </a>
+
+              <button class="btn btn-sm btn-warning tl-btn-incident" data-bs-toggle="tooltip" data-bs-title="Levantar Incidencia">
+                <i class="fa-solid fa-bell tl-icon-xl"></i>
+              </button>
+
+              <a href="/employees/profile/<?= $employee['id_employee'] ?>"
+                  class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-title="Calificar Empleado">
+                  <i class="fa-solid fa-star tl-icon-xl"></i>
+              </a>
+
+              <a href="/employees/profile/<?= $employee['id_employee'] ?>"
+                  class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-title="Ver Expediente">
+                  <i class="fa-solid fa-eye tl-icon-xl"></i>
+              </a>
+            </div>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -270,7 +278,7 @@
 
   <!-- Show number of records / Mostrar número de registros -->
   <?php if (!isset($pagination) || $pagination['total_pages'] <= 1): ?>
-  <div class="mt-4" style="max-width: 80%; margin: auto;">
+  <div class="my-4" style="max-width: 80%; margin: auto;">
     <p class="text-muted text-center m-0">
       Mostrando <?= count($employees) ?> de <?= count($employees) ?> empleados
     </p>
@@ -278,7 +286,7 @@
   <?php endif; ?>
   <!-- Pagination controls / Controles de paginación -->
   <?php if (isset($pagination) && $pagination['total_pages'] > 1): ?>
-  <div class="mt-4 d-flex justify-content-between align-items-center" style="max-width: 80%; margin: auto;">
+  <div class="my-4 d-flex justify-content-between align-items-center" style="max-width: 80%; margin: auto;">
     <!-- Pagination info / Información de paginación -->
     <p class="text-muted text-center m-0">
       Mostrando <?= count($employees) ?> de <?= $pagination['total_items'] ?> empleados 

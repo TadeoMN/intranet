@@ -12,8 +12,10 @@ class EmployeeProfile extends Model {
     protected static array  $fillable = [
       'id_employee_profile',
       'id_employee_fk',
+      'image_employee_profile',
       'birthdate_employee_profile',
       'gender_employee_profile',
+      'blood_type_employee_profile',
       'marital_status_employee_profile',
       'curp_employee_profile',
       'rfc_employee_profile',
@@ -26,7 +28,8 @@ class EmployeeProfile extends Model {
       'address_employee_profile',
       'emergency_contact_employee_profile',
       'emergency_phone_employee_profile',
-      'emergency_relationship_employee_profile'
+      'emergency_relationship_employee_profile',
+      'digital_file_employee_profile',
     ];
 
     /**
@@ -42,7 +45,6 @@ class EmployeeProfile extends Model {
         $st->execute();
         return $st->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
-
     /**
      * Create a new employee profile.
      * @param array $data Employee profile data.
@@ -58,7 +60,6 @@ class EmployeeProfile extends Model {
         $st->execute();
         return (int)$pdo->lastInsertId();
     }
-
     /**
      * Update an employee profile by employee ID.
      * @param int $id_employee Employee ID.
@@ -75,5 +76,33 @@ class EmployeeProfile extends Model {
         }
         $st->bindValue(':id_employee', $id_employee, \PDO::PARAM_INT);
         return $st->execute();
+    }
+    /**
+     * Get the employee profile enums for a specific column.
+     * @param string $column The column name to get enums for.
+     * @return array An array of enum values for the specified column.
+     * @throws \Exception If there is an error during the query.
+     * @description This function retrieves the enum values for a specific column in the employee profile table.
+     * It returns an array of enum values or an empty array if the column does not exist or has no enum values.
+     */
+    public static function getEmployeeProfileEnums($column): array {
+        $pdo = \Core\Database::pdo();
+        $sql = "SHOW COLUMNS FROM " . static::$table . " LIKE '{$column}'";
+        $st = $pdo->prepare($sql);
+        $st->execute();
+        $result = $st->fetchAll(\PDO::FETCH_ASSOC);
+        if ($result) {
+            $enums = [];
+            foreach ($result as $row) {
+                preg_match('/^enum\((.*)\)$/', $row['Type'], $matches);
+                if (isset($matches[1])) {
+                    $enums[$row['Field']] = array_map(function($value) {
+                        return trim($value, "'");
+                    }, explode(',', $matches[1]));
+                }
+            }
+            return $enums[$column] ?? [];
+        }
+        return [];
     }
 }

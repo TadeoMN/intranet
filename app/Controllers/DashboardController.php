@@ -7,10 +7,10 @@ use function view, redirect;
 
 class DashboardController {
     public function index() {
-        if (!\Core\Auth::check()) {
-            flash('info','Autenticación requerida','Por favor inicia sesión');
-            return redirect('/');
-        }
+        // if (!\Core\Auth::check()) {
+        //     flash('info','Autenticación requerida','Por favor inicia sesión');
+        //     return redirect('/');
+        // }
 
         $dashboardData = DashboardService::getDashboardData($_SESSION['uid'] ?? 0);
 

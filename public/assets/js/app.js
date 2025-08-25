@@ -4,6 +4,13 @@
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   });
 
+  document.querySelectorAll('.dropdown-menu [data-bs-toggle="dropdown"]').forEach(dropdown => {
+    dropdown.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+  });
+
   document.addEventListener('DOMContentLoaded', function() {
     const modalElement = new bootstrap.Modal(document.getElementById('createEmployeeModal'));
     const formElement = document.getElementById('createEmployeeForm');
@@ -14,7 +21,7 @@
     const edit_only = document.querySelectorAll('.tl-edit-only');
     const submitButton = document.getElementById('submitButton');
 
-    if (!modalElement || !formElement || !modalTitle || !hiddenIdInput || !btnNewEmployee || !btnEditEmployee.length || !edit_only.length || !submitButton) return console.error('One or more required elements not found.');
+    if (!modalElement || !formElement || !modalTitle || !hiddenIdInput || !btnNewEmployee || !btnEditEmployee.length || !edit_only.length || !submitButton) return console.error('One or more required elements at the modal not found.');
 
     btnNewEmployee.addEventListener('click', function() {
       modalTitle.textContent = 'AGREGAR EMPLEADO';
@@ -71,6 +78,33 @@
   });
 
   document.addEventListener('DOMContentLoaded', function() {
+    const btnNewIncident = document.querySelectorAll('.tl-btn-incident');
+    const modalIncident = new bootstrap.Modal(document.getElementById('incidentsModal'));
+
+    if (!btnNewIncident || !modalIncident) return console.error('New incident button or modal not found.');
+
+    btnNewIncident.forEach(button => {
+      button.addEventListener('click', function() {
+        const modalTitle = document.getElementById('modalTitle');
+        const submitButton = document.getElementById('submitButton');
+        const formElement = document.getElementById('incidentsForm');
+
+        if (!modalTitle || !submitButton || !formElement ) {
+          return console.error('One or more required elements in the incident modal not found.');
+        }
+        modalTitle.textContent = 'NUEVA INCIDENCIA';
+        submitButton.setAttribute('data-bs-original-title', 'Registrar Incidencia');
+        submitButton.setAttribute('class', 'btn btn-success');
+        submitButton.innerHTML = '<i class="fa-solid fa-plus tl-icon-xl"></i>';
+        formElement.action = '/incident/store';
+        modalIncident.show();
+      });
+    });
+  });
+
+
+
+  document.addEventListener('DOMContentLoaded', function() {
     const viewAccountButton = document.getElementById('viewAccountButton');
     const account_number_employee = document.getElementById('account_number_employee');
     if (!viewAccountButton || !account_number_employee) return console.error('View account button or account number input not found.');
@@ -95,9 +129,42 @@
     });
   });
 
-  document.getElementById('backToTopButton').addEventListener('click', function() {
-    document.getElementById('scrollableContainer').scrollTo({
-      top: 0,
-      behavior: 'smooth'
+  document.addEventListener('DOMContentLoaded', function() {
+    const backToTopButton = document.getElementById('backToTopButton');
+    const scrollableContainer = document.getElementById('scrollableContainer');
+
+    if (!backToTopButton) return console.error('Back to top button not found.');
+    if (!scrollableContainer) return console.error('Scrollable container not found.');
+
+    backToTopButton.addEventListener('click', function() {
+      scrollableContainer.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     });
   });
+
+function consult_search(searching) {
+  const datum = "search";
+  const parameters = { "searching" : searching, "datum" : datum };
+
+  $.ajax ({
+    data: parameters,
+    url: '',
+    type: 'POST',
+    beforeSend: function () {},
+    success: function (data) {
+      if (searching === '') {
+        document.getElementById("card-searching").style.opacity = 0;
+        document.getElementById("card-searching").style.transition = "all 1s";
+      } else {
+        document.getElementById("card-searching").style.opacity = 1;
+        document.getElementById("card-searching").style.transition = "all 1s";
+      }
+      document.getElementById("result_search").innerHTML = data;
+    },
+    error: function (data, error) {
+      console.log(error, data);
+    }
+  });
+}

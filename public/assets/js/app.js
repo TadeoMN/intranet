@@ -144,27 +144,150 @@
     });
   });
 
-function consult_search(searching) {
-  const datum = "search";
-  const parameters = { "searching" : searching, "datum" : datum };
+  // Live employee search for incidents modal (AJAX with debounce + local fallback)
+  // Búsqueda en vivo de empleados para el modal de incidencias (AJAX con debounce + fallback local)
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('searchEmployeeInput');
+    const btn = document.getElementById('searchEmployeeButton');
+    const card = document.getElementById('card-searching');
+    const result = document.getElementById('result_search');
 
-  $.ajax ({
-    data: parameters,
-    url: '',
-    type: 'POST',
-    beforeSend: function () {},
-    success: function (data) {
-      if (searching === '') {
-        document.getElementById("card-searching").style.opacity = 0;
-        document.getElementById("card-searching").style.transition = "all 1s";
-      } else {
-        document.getElementById("card-searching").style.opacity = 1;
-        document.getElementById("card-searching").style.transition = "all 1s";
-      }
-      document.getElementById("result_search").innerHTML = data;
-    },
-    error: function (data, error) {
-      console.log(error, data);
+    const selectEmployee = document.getElementById('id_employee_fk');
+
+    if (!input || !btn || !card || !result || !selectEmployee || !selectDept || !selectPos) {
+      return; // Not present in every view
     }
+
+    const endpoint = input.dataset.endpoint || '/api/employee/search';
+    const MIN_LENGTH = 2;
+    let lastQuery = '';
+    let controller = null;
+
+    function debounce(fn, delay) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+
+    function showCard(show) {
+      card.style.opacity = show ? '1' : '0';
+      input.setAttribute('aria-expanded', show ? 'true' : 'false');
+      if (!show) result.innerHTML = '';
+    }
+
+    function renderResults(items) {
+      if (!items || !items.length) {
+        result.innerHTML = '<div class="text-muted p-2">No se encontraron resultados</div>';
+        return;
+      }
+      const html = items.map((it, idx) => {
+        const name = escapeHTML(it.name || it.name_employee || '');
+        const id = it.id || it.id_employee;
+        return `
+          <button type="button"
+            role="option"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            data-id="${id}"
+            data-name="${name}"
+            aria-selected="${idx === 0 ? 'true' : 'false'}">
+            <span>${name}</span>
+          </button>
+        `;
+      }).join('');
+      result.innerHTML = `<div class="list-group list-group-flush">${html}</div>`;
+    }
+
+    function pickItem(el) {
+      if (!el || !el.dataset) return;
+      const id = el.dataset.id;
+      const name = el.dataset.name || '';
+
+      // Seleccionar empleado en el select principal
+      const opt = selectEmployee.querySelector(`option[value="${id}"]`);
+      if (!opt) {
+        // si no existe la opción, créala efímeramente para permitir selección
+        const tmp = document.createElement('option');
+        tmp.value = id;
+        tmp.textContent = name;
+        selectEmployee.appendChild(tmp);
+      }
+      selectEmployee.value = id;
+
+      input.value = name;
+      showCard(false);
+    }
+
+    async function remoteSearch(q) {
+      try {
+        if (controller) controller.abort();
+        controller = new AbortController();
+        const res = await fetch(`${endpoint}?q=${encodeURIComponent(q)}`, {
+          signal: controller.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        // Normalizar campos esperados
+        const items = (Array.isArray(data) ? data : (data.items || []))
+          .map(e => ({
+            id: e.id ?? e.id_employee,
+            name: e.name ?? e.name_employee,
+          }));
+        renderResults(items);
+      } catch (err) {
+        // Fallback: filtrado local en el select de empleados
+        const qLower = q.toLowerCase();
+        const options = Array.from(selectEmployee.options)
+          .filter(o => o.value && o.text.toLowerCase().includes(qLower))
+          .slice(0, 10)
+          .map(o => ({ id: o.value, name: o.text }));
+        renderResults(options);
+      }
+    }
+
+    const onType = debounce(() => {
+      const q = input.value.trim();
+      if (q.length < MIN_LENGTH) {
+        showCard(false);
+        lastQuery = '';
+        return;
+      }
+      if (q === lastQuery) return;
+      lastQuery = q;
+      showCard(true);
+      remoteSearch(q);
+    }, 250);
+
+    input.addEventListener('input', onType);
+    btn.addEventListener('click', () => onType());
+
+    // Delegación: click sobre un resultado
+    result.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[role="option"]');
+      if (btn) pickItem(btn);
+    });
+
+    // Teclas: Enter selecciona el primero; Escape cierra
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        showCard(false);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = result.querySelector('button[role="option"]');
+        if (first) pickItem(first);
+      }
+    });
+
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!card.contains(e.target) && e.target !== input) {
+        showCard(false);
+      }
+    });
   });
-}

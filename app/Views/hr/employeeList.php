@@ -251,12 +251,12 @@
                 <i class="fa-solid fa-bell tl-icon-xl"></i>
               </button>
 
-              <a href="/employees/profile/<?= $employee['id_employee'] ?>"
+              <a href="#"
                   class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-title="Calificar Empleado">
                   <i class="fa-solid fa-star tl-icon-xl"></i>
               </a>
 
-              <a href="/employees/profile/<?= $employee['id_employee'] ?>"
+              <a href="#"
                   class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-title="Ver Expediente">
                   <i class="fa-solid fa-eye tl-icon-xl"></i>
               </a>

@@ -8,7 +8,6 @@ use App\Models\EmployeeProfile;
 use App\Models\Contracts;
 
 use function view, redirect, flash;
-
 /**
  * EmployeeController handles employee-related operations such as listing, creating, updating, and deleting employees.
  * It provides methods to manage employee data, including pagination, filtering, and sorting.
@@ -238,7 +237,6 @@ class EmployeeController {
         }
         return view('hr/employeeProfile', compact('profile', 'contract', 'employee', 'departments', 'positionsByDepartment', 'bloodTypes', 'genders', 'maritalStatuses', 'contractTypes', 'payrollSchemes'));
     }
-
     /**
      * Show the form to create a new employee profile.
      * @param int $id_employee Employee ID.
@@ -268,5 +266,30 @@ class EmployeeController {
             return redirect('/employees/list');
         }
         return view('hr/employeeProfile', compact('employee', 'profile', 'contract', 'departments', 'positionsByDepartment'));
+    }
+    // GET /api/employees/search?q=algo[&debug=1]
+    public function searchEmployee(): void {
+        header('Content-Type: application/json; charset=utf-8');
+        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : (isset($_GET['term']) ? trim((string)$_GET['term']) : '');
+
+        if (mb_strlen($q) < 2) {
+            echo json_encode(['ok' => true, 'items' => []], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        try {
+            $results = Employee::searchEmployee($q);
+            echo json_encode(['ok' => true, 'items' => $results], JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            echo json_encode([
+                'ok' => false,
+                'items' => [],
+                'flash' => [
+                    'type' => 'danger',
+                    'title' => 'Búsqueda de empleados',
+                    'message' => 'Ocurrió un error al realizar la búsqueda. Intenta de nuevo.'
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+        }
     }
 }

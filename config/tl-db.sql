@@ -245,12 +245,10 @@ CREATE TABLE incident_type (
   action_incident_type VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE incident_type
-  ADD COLUMN code_incident_type VARCHAR(20) NOT NULL UNIQUE FIRST;
-ALTER TABLE incident_type
-  ADD COLUMN severity_incident_type ENUM('BAJA', 'MEDIA', 'ALTA', 'CRITICA') NOT NULL DEFAULT 'BAJA' AFTER description_incident_type;  
-ALTER TABLE incident_type
-  ADD COLUMN action_incident_type VARCHAR(100) NOT NULL AFTER severity_incident_type;
+-- ALTER TABLE incident_type
+--   ADD COLUMN code_incident_type VARCHAR(20) NOT NULL UNIQUE FIRST,
+--   ADD COLUMN severity_incident_type ENUM('BAJA', 'MEDIA', 'ALTA', 'CRITICA') NOT NULL DEFAULT 'BAJA' AFTER description_incident_type,
+--   ADD COLUMN action_incident_type VARCHAR(100) NOT NULL AFTER severity_incident_type;
 
 -- --------------------
 -- 2.2 Tabla employees
@@ -271,8 +269,8 @@ CREATE TABLE employee (
   CONSTRAINT chk_employee_seniority CHECK (seniority_employee >= 0 AND seniority_employee <= 99.9)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE department
-  ADD CONSTRAINT id_manager_department_fk FOREIGN KEY (id_manager_employee_fk) REFERENCES employee(id_employee) ON DELETE SET NULL;
+-- ALTER TABLE department
+--   ADD CONSTRAINT id_manager_department_fk FOREIGN KEY (id_manager_employee_fk) REFERENCES employee(id_employee) ON DELETE SET NULL;
 
 
 -- Triggers para manejar el código del empleado y calcular la antigüedad.
@@ -447,10 +445,11 @@ CREATE TABLE incident (
   id_incident INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_employee_fk INT UNSIGNED NOT NULL,
   id_incident_type_fk SMALLINT UNSIGNED NOT NULL,
-  date_incident DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ot_incident VARCHAR(20) DEFAULT NULL,
+  waste_incident VARCHAR(200) DEFAULT NULL,
   observation_incident TEXT,
-  appeal_incident TEXT,
-  severity_incident ENUM('BAJA', 'MEDIA', 'ALTA', 'CRITICA') DEFAULT 'MEDIA',
+  appeal_incident TEXT DEFAULT NULL,
+  identification_incident ENUM('INTERNA', 'EXTERNA') DEFAULT 'INTERNA',
   reported_by INT UNSIGNED NOT NULL,
   reported_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_incident_type_fk) REFERENCES incident_type(id_incident_type) ON DELETE RESTRICT,
@@ -578,7 +577,14 @@ BEGIN
 END//
 DELIMITER ;
 
-ALTER TABLE employee_profile
-  ADD COLUMN image_employee_profile VARCHAR(255) DEFAULT NULL,
-  ADD COLUMN rfc_employee_profile VARCHAR(13) UNIQUE,
-  ADD COLUMN digital_file_employee_profile VARCHAR(255) DEFAULT NULL;
+-- ALTER TABLE employee_profile
+--   ADD COLUMN image_employee_profile VARCHAR(255) DEFAULT NULL,
+--   ADD COLUMN rfc_employee_profile VARCHAR(13) UNIQUE,
+--   ADD COLUMN digital_file_employee_profile VARCHAR(255) DEFAULT NULL;
+
+-- ALTER TABLE incident
+--   DROP COLUMN date_incident;
+--   DROP COLUMN severity_incident;
+--   ADD COLUMN ot_incident VARCHAR(20) DEFAULT NULL AFTER id_incident_type_fk,
+--   ADD COLUMN waste_incident VARCHAR(200) DEFAULT NULL AFTER ot_incident,
+--   MODIFY COLUMN appeal_incident TEXT DEFAULT NULL AFTER waste_incident;

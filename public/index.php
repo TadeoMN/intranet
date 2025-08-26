@@ -1,5 +1,5 @@
 <?php
-
+  declare(strict_types=1);
   ini_set('display_errors', 1);
   error_reporting(E_ALL);
   
@@ -34,11 +34,17 @@
 
   $router->get('/employees/list', 'EmployeeController@listEmployees');
   $router->get('/employees/profile/{id}', 'EmployeeController@showProfileEmployee');
-  $router->get('/api/employee/{id}', 'EmployeeController@showEmployee');
+  $router->get('/api/employees/search', 'EmployeeController@searchEmployee');
+  $router->get('/api/employee/{id_employee:\d+}', 'EmployeeController@showEmployee');
   $router->post('/employee/delete/{id}', 'EmployeeController@deleteEmployee');
   $router->post('/employee/store', 'EmployeeController@storeEmployee');
   $router->post('/employee/update/{id}', 'EmployeeController@updateEmployee');
+
   $router->get('/employees/profile/create/{id}', 'EmployeeController@createProfileEmployee');
+
+
+  $router->get('/api/incidents/search', 'IncidentsController@searchIncidents');
+  $router->post('/incidents/store', 'IncidentsController@storeIncident');
 
   $output = $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 

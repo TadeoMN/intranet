@@ -43,7 +43,9 @@
   $router->get('/employees/profile/create/{id}', 'EmployeeController@createProfileEmployee');
 
 
+  $router->get('/incidents/list', 'IncidentsController@listIncidents');
   $router->get('/api/incidents/search', 'IncidentsController@searchIncidents');
+  $router->get('/api/incident/{id_incident:\d+}', 'IncidentsController@findIncidentById');
   $router->post('/incidents/store', 'IncidentsController@storeIncident');
 
   $output = $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

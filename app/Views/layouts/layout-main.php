@@ -136,6 +136,7 @@
                                     Panel de Recursos Humanos
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink3">
+                                    <!-- New Records -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
@@ -146,6 +147,12 @@
                                                 <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
                                                     <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
                                                     Alta de Empleado
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#incidentsModal">
+                                                    <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
+                                                    Alta de Incidencia
                                                 </a>
                                             </li>
                                             <li>
@@ -166,25 +173,24 @@
                                                     Alta de Puesto
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#incidentsModal">
-                                                    <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
-                                                    Alta de Incidencia
-                                                </a>
-                                            </li>
                                         </ul>
                                     </li>
-
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-
+                                    <!-- End New Records -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Catalogs -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-list-ul me-3 tl-icon"></i>
                                             Catálogos
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-dark">
+                                            <li>
+                                                <a class="dropdown-item" href="/incidents/list">
+                                                    <i class="fa-solid fa-list-ul me-3 tl-icon"></i>
+                                                    Catálogo de Incidencias
+                                                </a>
+                                            </li>
                                             <li>
                                                 <a class="dropdown-item" href="/employees/list">
                                                     <i class="fa-solid fa-list-ul me-3 tl-icon"></i>
@@ -205,11 +211,10 @@
                                             </li>
                                         </ul>
                                     </li>
-
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-
+                                    <!-- End Catalogs -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Reports -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-file-invoice me-3 tl-icon"></i>
@@ -236,11 +241,10 @@
                                             </li>
                                         </ul>
                                     </li>
-
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-
+                                    <!-- End Reports -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Authorizations -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-user-check me-3 tl-icon"></i>
@@ -255,11 +259,10 @@
                                             </li>
                                         </ul>
                                     </li>
-
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-
+                                    <!-- End Authorizations -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Settings -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-gear me-3 tl-icon"></i>
@@ -280,6 +283,7 @@
                                             </li>
                                         </ul>
                                     </li>
+                                    <!-- End Settings -->
                                 </ul>
                             </li>
                             <!-- End HR Panel -->
@@ -289,29 +293,94 @@
                                     Panel de Calidad
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink1">
+                                    <!-- New Records -->
                                     <li>
-                                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#incidentsModal">
+                                        <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
-                                            Alta de Incidencia
+                                            Nuevos Registros
                                         </a>
+                                        <ul class="dropdown-menu dropdown-menu-dark">
+                                            <li>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#incidentsModal">
+                                                    <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
+                                                    Alta de Incidencia
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
+                                                    <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
+                                                    Alta de Empleado
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </li>
-
+                                    <!-- End New Records -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Catalogs -->
                                     <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="fa-solid fa-user-graduate me-3"></i>
-                                            Calificar
+                                        <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-list-ul me-3 tl-icon"></i>
+                                            Catálogos
                                         </a>
+                                        <ul class="dropdown-menu dropdown-menu-dark">
+                                            <li>
+                                                <a class="dropdown-item" href="/incidents/list">
+                                                    <i class="fa-solid fa-list-ul me-3 tl-icon"></i>
+                                                    Catálogo de Incidencias
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="/employees/list">
+                                                    <i class="fa-solid fa-list-ul me-3 tl-icon"></i>
+                                                    Catálogo de Empleados
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </li>
-
+                                    <!-- End Catalogs -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Reports -->
                                     <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="fa-solid fa-eye me-3"></i>
-                                            Incidencias
+                                        <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-file-invoice me-3 tl-icon"></i>
+                                            Reportes
                                         </a>
+                                        <ul class="dropdown-menu dropdown-menu-dark">
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fa-solid fa-file-circle-info me-3 tl-icon"></i>
+                                                    Reporte de Incidencias
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fa-solid fa-file-circle-info me-3 tl-icon"></i>
+                                                    Reporte de Calificaciones
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </li>
+                                    <!-- End Reports -->
+                                    <!-- Separator -->
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Settings -->
+                                    <li>
+                                        <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-gear me-3 tl-icon"></i>
+                                            Configuración
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-dark">
+                                            <li>
+                                                <a class="dropdown-item" href="/incident-types/list">
+                                                    <i class="fa-solid fa-gear me-3 tl-icon"></i>
+                                                    Incidencias
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <!-- End Quality Panel -->
                                 </ul>
                             </li>
                             <!-- End Quality Panel -->
@@ -354,10 +423,10 @@
     <?= flash_alert_button() ?>
     <?= flash_logout() ?>
     <?= flash_delete_employee() ?>
+
     <!-- Include modals -->
     <?php include __DIR__ . '/../hr/employeeCreateModal.php'; ?>
     <?php include __DIR__ . '/../incidents/incidentsModal.php'; ?>
-
     <!-- Load DataTables and session scripts only when needed -->
     <script>
         // Lazy load session-specific scripts
@@ -368,5 +437,4 @@
         });
     </script>
 </body>
-
 </html>

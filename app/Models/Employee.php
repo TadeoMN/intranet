@@ -60,12 +60,9 @@ class Employee extends Model {
      */
     public static function filterPaginated(?string $search, ?string $dateFrom, ?string $dateTo, int $limit, int $offset, string $sort, string $order, ?string $status): array {
         $pdo = \Core\Database::pdo();
-
         if ($status === null) { $status = 'ACTIVO'; }
-
         $where = [];
         $bindings = [];
-
 
         if ($status !== 'TODOS') {
             $where[] = 'employee.status_employee = :status';
@@ -74,18 +71,18 @@ class Employee extends Model {
 
         $search = trim((string)$search);
         if ($search !== '') {
-            $likeSearch = '%' . mb_strtolower($search, 'UTF-8') . '%';
+            $likeSearch = '%' . mb_strtoupper($search, 'UTF-8') . '%';
             $where[] = '(
-                LOWER(employee.code_employee) LIKE :search1
-                OR LOWER(employee.name_employee) LIKE :search2
-                OR LOWER(employee.status_employee) LIKE :search3
-                OR LOWER(employee.type_employee) LIKE :search4
-                OR LOWER(employee.seniority_employee) LIKE :search5
-                OR LOWER(users.name_user) LIKE :search6
-                OR LOWER(positions.name_position) LIKE :search7
-                OR LOWER(department.name_department) LIKE :search8
-                OR LOWER(manager.name_employee) LIKE :search9
-                OR LOWER(contracts.number_payroll_contract) LIKE :search10
+                UPPER(employee.code_employee) LIKE :search1
+                OR UPPER(employee.name_employee) LIKE :search2
+                OR UPPER(employee.status_employee) LIKE :search3
+                OR UPPER(employee.type_employee) LIKE :search4
+                OR UPPER(employee.seniority_employee) LIKE :search5
+                OR UPPER(users.name_user) LIKE :search6
+                OR UPPER(positions.name_position) LIKE :search7
+                OR UPPER(department.name_department) LIKE :search8
+                OR UPPER(manager.name_employee) LIKE :search9
+                OR UPPER(contracts.number_payroll_contract) LIKE :search10
             )';
             $bindings += [
                 ':search1' => $likeSearch,
@@ -119,6 +116,7 @@ class Employee extends Model {
             'type_employee', 'seniority_employee', 'name_user', 'name_position',
             'name_department', 'name_manager', 'number_payroll_contract'
         ];
+
         $orderBy = in_array($sort, $allowedSorts, true) ? $sort : 'code_employee';
         $orderDirection = $order === 'desc' ? 'DESC' : 'ASC';
         $orderBy = $orderBy . ' ' . $orderDirection;
@@ -248,7 +246,15 @@ class Employee extends Model {
         }
         return $st->rowCount() > 0;
     }
-
+    /**
+     * Search for employees by name or code.
+     * @param string $query The search query.
+     * @return array An array of matching employees.
+     * @throws \Exception If there is an error during the search.
+     * @description This function searches for employees in the database based on a search query.
+     * It looks for matches in the employee's name and code. If the search fails,
+     * it throws an exception.
+     */
     public static function searchEmployee(string $query): array {
         $pdo = \Core\Database::pdo();
 

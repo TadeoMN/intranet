@@ -3,10 +3,10 @@
     <div class="modal-content">
       <form method="POST" action="/incidents/store" id="incidentsForm">
         <div class="modal-header bg-dark text-white">
-          <h3 class="modal-title" id="incidentsModalTitle">AGREGAR INCIDENCIA</h3>
+          <h3 class="modal-title" id="incidentsTitleModal">AGREGAR INCIDENCIA</h3>
         </div>
         <div class="modal-body row g-2">
-          <div class="input-group col-12">
+          <div class="input-group col-12" id="incidentSearchGroup">
             <div class="form-floating">
               <input
                 type="text"
@@ -34,7 +34,7 @@
 
           <div class="col-12 d-none">
             <div class="form-floating">
-              <input type="text" class="form-control" id="id_incident_modal" name="id_incident_modal" placeholder="ID Incidencia" disabled>
+              <input type="text" class="form-control" id="id_incident_modal" name="id_incident_modal" placeholder="ID Incidencia" hidden readonly>
               <label for="id_incident_modal" class="form-label">ID Incidencia</label>
             </div>
           </div>
@@ -67,7 +67,7 @@
             </div>
           </div>
 
-          <div class="input-group col-12">
+          <div class="input-group col-12" id="employeeSearchGroup">
             <div class="form-floating">
               <input
                 type="text"
@@ -93,9 +93,16 @@
             </div>
           </div>
 
-          <div class="col-12 ">
+          <div class="col-12 d-none">
             <div class="form-floating">
-              <input type="text" class="form-control" id="id_employee_modal" name="id_employee_modal" placeholder="ID de empleado" disabled>
+              <input type="text" class="form-control" id="reported_by_modal" name="reported_by_modal" placeholder="ID de usuario" value="<?= $_SESSION['uid'] ?>" hidden readonly>
+              <label for="reported_by_modal" class="form-label">ID usuario</label>
+            </div>
+          </div>
+
+          <div class="col-12 d-none">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="id_employee_modal" name="id_employee_modal" placeholder="ID de empleado" hidden readonly>
               <label for="id_employee_modal" class="form-label">ID Empleado</label>
             </div>
           </div>
@@ -116,8 +123,8 @@
 
           <div class="col-6 col-md-4">
             <div class="form-floating">
-              <input type="text" class="form-control" id="ot_indicent_modal" name="ot_indicent_modal" placeholder="OT de incidencia">
-              <label for="ot_indicent_modal" class="form-label">Orden de trabajo</label>
+              <input type="text" class="form-control" id="ot_incident_modal" name="ot_incident_modal" placeholder="Ot de incidencia">
+              <label for="ot_incident_modal" class="form-label">Orden de trabajo</label>
             </div>
           </div>
 
@@ -130,27 +137,30 @@
 
           <div class="col-12 col-md-4">
             <div class="form-floating">
-              <select class="form-select" id="detection_incident_modal" name="detection_incident_modal" aria-label="Detección de incidencia">
-                <option value="Interna" selected>Interna</option>
-                <option value="Externa">Externa</option>
+              <select class="form-select" id="identification_incident_modal" name="identification_incident_modal" aria-label="Detección de incidencia" required>
+                <option value="INTERNA" selected>Interna</option>
+                <option value="EXTERNA">Externa</option>
               </select>
-              <label for="detection_incident_modal" class="form-label">Detección de incidencia</label>
+              <label for="identification_incident_modal" class="form-label">Detección de incidencia</label>
             </div>
           </div>
 
           <div class="col-12">
             <div class="form-floating">
-              <textarea class="form-control" id="remark_incident_modal" name="remark_incident_modal" placeholder="Observaciones de la incidencia" rows="6"></textarea>
-              <label for="remark_incident_modal" class="form-label">Observaciones de la incidencia</label>
+              <textarea class="form-control" id="observation_incident_modal" name="observation_incident_modal" placeholder="Observaciones de la incidencia" rows="6"></textarea>
+              <label for="observation_incident_modal" class="form-label">Observaciones de la incidencia</label>
             </div>
           </div>
         </div>
 
         <div class="modal-footer bg-dark text-white">
-          <button type="submit" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Agregar Incidencia" id="incidentsSubmitButton">
+          <button type="submit" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Agregar Incidencia" id="saveIncidentButtonModal">
             <i class="fa-solid fa-plus tl-icon-xl"></i>
           </button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cancelar">
+          <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Limpiar formulario" id="clearIncidentButtonModal">
+            <i class="fa-solid fa-eraser tl-icon-xl"></i>
+          </button>
+          <button type="button" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cancelar" data-bs-dismiss="modal">
             <i class="fa-solid fa-xmark tl-icon-xl"></i>
           </button>
         </div>

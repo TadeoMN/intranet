@@ -158,13 +158,13 @@ table thead th {
 }
 .tl-icon-xl{
   padding: .35rem;
-  font-size: 1.2rem;
+  font-size: 1.35rem;
 }
 
 .tl-pagination-md {
   --bs-pagination-padding-x: 1rem;
   --bs-pagination-padding-y: .4rem;
-  --bs-pagination-font-size: 1.1rem;
+  --bs-pagination-font-size: 1.2rem;
 }
 
 .tl-scroll {

@@ -454,7 +454,7 @@ CREATE TABLE incident (
   reported_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_incident_type_fk) REFERENCES incident_type(id_incident_type) ON DELETE RESTRICT,
   FOREIGN KEY (id_employee_fk) REFERENCES employee(id_employee) ON DELETE RESTRICT,
-  FOREIGN KEY (reported_by) REFERENCES employee(id_employee) ON DELETE RESTRICT
+  FOREIGN KEY (reported_by) REFERENCES users(id_user) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Insertar departamentos básicos del sistema

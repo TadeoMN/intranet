@@ -186,14 +186,15 @@ function buildUrl(array $changes = []): string {
         'search' => $_GET['search'] ?? '',
         'dateFrom' => $_GET['dateFrom'] ?? '',
         'dateTo' => $_GET['dateTo'] ?? '',
-        'sort' => $_GET['sort'] ?? 'code_employee',
-        'order' => $_GET['order'] ?? 'asc',
+        'sort' => $_GET['sort'] ?? null,
+        'order' => $_GET['order'] ?? 'desc',
         'status' => $_GET['status'] ?? null
     ];
 
     $params = array_merge($params, $changes);
     $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
-    return '/employees/list?' . htmlspecialchars(http_build_query($params), ENT_QUOTES, 'UTF-8');
+    //RETURN URL DINAMIC FOR OTHER PAGES
+    return strtok($_SERVER['REQUEST_URI'], '?') . '?' . http_build_query($params);
 }
 function sortLink($colunm, $currentSort, $currentOrder): string {
     $newOrder = ($currentSort === $colunm && $currentOrder === 'asc') ? 'desc' : 'asc';
@@ -202,4 +203,64 @@ function sortLink($colunm, $currentSort, $currentOrder): string {
 function sortIcon($colunm, $currentSort, $currentOrder): string {
     if ($currentSort !== $colunm) { return 'fa-sort'; }
     return $currentOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+}
+/* ------------ formatea fechas con y sin hora en español ------------- */
+function date_lenguage_spanish(
+    string |\DateTimeInterface|null $value,
+    ?string $patternDateTime = null,
+    ?string $patternDate = null,
+    string $locale = 'es_MX',
+    string $timezone = 'America/Mexico_City',
+    string $default = 'N/A'
+    ): string {
+    if ($value === null || $value === '') return $default;
+
+    try {
+        if ($value instanceof \DateTimeInterface) {
+            $dateTime = (new \DateTime($value->format('c')))->setTimezone(new \DateTimeZone($timezone));
+            $raw = $value->format('c');
+        } else {
+            $raw = trim((string)$value);
+            if ($raw === '' || $raw === '0000-00-00' || $raw === '0000-00-00 00:00:00') return $default;
+
+            $dateTime = (new \DateTime($raw))->setTimezone(new \DateTimeZone($timezone));
+            $dateTime->setTimezone(new \DateTimeZone($timezone));
+        }
+    } catch (\Exception $e) {
+        return $default;
+    }
+
+    $hasClockRaw = (bool)preg_match('/\d{1,2}:\d{2}(:\d{2})?/', (string)($raw ?? ''));
+    $isMidnight = $dateTime->format('H:i:s') === '00:00:00';
+    $hasTime = $hasClockRaw && !$isMidnight;
+
+    $patternDate ??= 'd \'de\' MMMM \'de\' y';
+    $patternDateTime ??= "d 'de' MMMM 'de' y, h:mm a";
+
+    if(class_exists(\IntlDateFormatter::class)) {
+        $formatter = new \IntlDateFormatter(
+            $locale,
+            \IntlDateFormatter::NONE,
+            \IntlDateFormatter::NONE,
+            $timezone,
+            \IntlDateFormatter::GREGORIAN,
+            $hasTime ? $patternDateTime : $patternDate
+        );
+        $dateText = $formatter->format($dateTime);
+        return $dateText !== false ? $dateText : $default;
+    }
+
+    static $months = [
+        1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+        5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+        9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+    ];
+    $day = (int)$dateTime->format('j');
+    $month = $months[(int)$dateTime->format('n')] ?? $dateTime->format('F');
+    $year = $dateTime->format('Y');
+    if ($hasTime) {
+        $time = $dateTime->format('g:i A');
+        return "$day de $month de $year, $time";
+    }
+    return "$day de $month de $year";
 }

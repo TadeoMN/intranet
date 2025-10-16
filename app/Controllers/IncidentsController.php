@@ -6,10 +6,21 @@ use App\Models\Incident;
 use App\Models\IncidentType;
 use App\Models\Department;
 use App\Models\Positions;
+use App\Services\IncidentExportService;
 
 use function view, redirect, flash;
 
 class IncidentsController {
+
+  private const ALLOWED_PAGE_SIZES = [5, 10, 20, 50, 100];
+  private const ALLOWED_SORTS = [
+    'id_incident',
+    'employee.name_employee',
+    'reported_at',
+    'code_incident_type',
+    'name_incident_type',
+    'reporter_name'
+  ];
 
   public function searchIncidents(): void {
     header('Content-Type: application/json; charset=utf-8');
@@ -92,48 +103,37 @@ class IncidentsController {
   }
 
   public function listIncidents() {
-    $allowedPages = [5,10,20,50,100]; // Example allowed pages
-    $limit = (int)($_GET['limit'] ?? 10);
-    $limit = in_array($limit, $allowedPages) ? $limit : 10;
+    $filters = $this->extractFilters();
 
-    $page = max(1, (int) ($_GET['page'] ?? 1));
-    $offset = ($page - 1) * $limit;
-
-    $search = trim($_GET['search'] ?? '');
-    $dateFrom = $_GET['dateFrom'] ?? '';
-    $dateTo = $_GET['dateTo'] ?? '';
-
-    $allowedSorts = [
-        'id_incident', 'employee.name_employee', 'reported_at', 'code_incident_type', 'name_incident_type', 'reporter_name'
-    ];
-
-    $sort = $_GET['sort'] ?? 'id_incident';
-
-    $sort = in_array($sort, $allowedSorts, true) ? $sort : 'id_incident';
-    $order = (isset($_GET['order']) && strtolower($_GET['order']) === 'asc') ? 'asc' : 'desc';
-
-    $status = $_GET['status'] ?? null;
-
-    $incidentData = Incident::filterPaginated($search, $dateFrom, $dateTo, $limit, $offset, $sort, $order, $status);
+    $incidentData = Incident::filterPaginated(
+      $filters['search'],
+      $filters['dateFrom'],
+      $filters['dateTo'],
+      $filters['limit'],
+      $filters['offset'],
+      $filters['sort'],
+      $filters['order'],
+      $filters['status']
+    );
     $incidents = $incidentData['incidents'];
     $total = $incidentData['total'];
-    $totalPages = ceil($total / $limit);
+    $totalPages = (int)ceil($total / $filters['limit']);
 
     $pagination = [
-        'current_page' => $page,
+        'current_page' => $filters['page'],
         'total_pages' => $totalPages,
         'total_items' => $total,
-        'limit' => $limit,
-        'has_prev' => $page > 1,
-        'has_next' => $page < $totalPages,
-        'prev_page' => $page > 1 ? $page - 1 : null,
-        'next_page' => $page < $totalPages ? $page + 1 : null,
-        'search' => $search,
-        'dateFrom' => $dateFrom,
-        'dateTo' => $dateTo,
-        'sort' => $sort,
-        'order' => strtolower($order),
-        'status' => $status
+        'limit' => $filters['limit'],
+        'has_prev' => $filters['page'] > 1,
+        'has_next' => $filters['page'] < $totalPages,
+        'prev_page' => $filters['page'] > 1 ? $filters['page'] - 1 : null,
+        'next_page' => $filters['page'] < $totalPages ? $filters['page'] + 1 : null,
+        'search' => $filters['search'],
+        'dateFrom' => $filters['dateFrom'],
+        'dateTo' => $filters['dateTo'],
+        'sort' => $filters['sort'],
+        'order' => $filters['order'],
+        'status' => $filters['status']
     ];
 
     $departments = Department::all();
@@ -147,5 +147,92 @@ class IncidentsController {
         ];
     }
     return view('incidents/incidentsList', compact('incidents', 'pagination', 'departments', 'positionsByDepartment'));
+  }
+
+  public function exportExcel(): void {
+    $filters = $this->extractFilters();
+    $incidents = Incident::filterForExport(
+      $filters['search'],
+      $filters['dateFrom'],
+      $filters['dateTo'],
+      $filters['sort'],
+      $filters['order'],
+      $filters['status']
+    );
+
+    $content = IncidentExportService::buildExcel($incidents, $filters);
+    $filename = 'incidencias_' . date('Ymd_His') . '.xls';
+
+    while (ob_get_level() > 0) {
+      ob_end_clean();
+    }
+
+    header('Content-Type: application/vnd.ms-excel; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+
+    echo "\xEF\xBB\xBF"; // UTF-8 BOM so Excel recognises encoding
+    echo $content;
+    exit;
+  }
+
+  public function exportPdf(): void {
+    $filters = $this->extractFilters();
+    $incidents = Incident::filterForExport(
+      $filters['search'],
+      $filters['dateFrom'],
+      $filters['dateTo'],
+      $filters['sort'],
+      $filters['order'],
+      $filters['status']
+    );
+
+    $pdf = IncidentExportService::buildPdf($incidents, $filters);
+    $filename = 'incidencias_' . date('Ymd_His') . '.pdf';
+
+    while (ob_get_level() > 0) {
+      ob_end_clean();
+    }
+
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+
+    echo $pdf;
+    exit;
+  }
+
+  private function extractFilters(): array {
+    $limit = (int)($_GET['limit'] ?? 10);
+    if (!in_array($limit, self::ALLOWED_PAGE_SIZES, true)) {
+      $limit = 10;
+    }
+
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $offset = ($page - 1) * $limit;
+
+    $search = trim((string)($_GET['search'] ?? ''));
+    $dateFrom = $_GET['dateFrom'] ?? '';
+    $dateTo = $_GET['dateTo'] ?? '';
+
+    $sort = $_GET['sort'] ?? 'id_incident';
+    if (!in_array($sort, self::ALLOWED_SORTS, true)) {
+      $sort = 'id_incident';
+    }
+
+    $order = strtolower((string)($_GET['order'] ?? 'desc')) === 'asc' ? 'asc' : 'desc';
+    $status = $_GET['status'] ?? null;
+
+    return [
+      'limit' => $limit,
+      'page' => $page,
+      'offset' => $offset,
+      'search' => $search,
+      'dateFrom' => $dateFrom,
+      'dateTo' => $dateTo,
+      'sort' => $sort,
+      'order' => $order,
+      'status' => $status
+    ];
   }
 }

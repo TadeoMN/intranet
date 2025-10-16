@@ -31,9 +31,12 @@ class Auth {
             'is_active'           => 1
         ]);
 
+        $user = User::findUserWithEmployee($user['id_user']);
+
         $_SESSION['uid']   = $user['id_user'];
         $_SESSION['email'] = $user['email_user'];
         $_SESSION['name']  = $user['name_user'];
+        $_SESSION['name_employee']  = $user['name_employee'];
         $_SESSION['token_session'] = $token_session;
         $_SESSION['status_user'] = $user['status_user'];
 

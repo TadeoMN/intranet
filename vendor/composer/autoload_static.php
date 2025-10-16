@@ -7,6 +7,23 @@ namespace Composer\Autoload;
 class ComposerStaticInit15f9a93dc51294685918a9ed6b4e047d
 {
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Svg\\' => 4,
+            'Sabberworm\\CSS\\' => 15,
+        ),
+        'M' => 
+        array (
+            'Masterminds\\' => 12,
+        ),
+        'F' => 
+        array (
+            'FontLib\\' => 8,
+        ),
+        'D' => 
+        array (
+            'Dompdf\\' => 7,
+        ),
         'C' => 
         array (
             'Core\\' => 5,
@@ -18,6 +35,26 @@ class ComposerStaticInit15f9a93dc51294685918a9ed6b4e047d
     );
 
     public static $prefixDirsPsr4 = array (
+        'Svg\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
+        ),
+        'Sabberworm\\CSS\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
+        ),
+        'Masterminds\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
+        ),
+        'Dompdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+        ),
         'Core\\' => 
         array (
             0 => __DIR__ . '/../..' . '/core',
@@ -29,31 +66,8 @@ class ComposerStaticInit15f9a93dc51294685918a9ed6b4e047d
     );
 
     public static $classMap = array (
-        'App\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Controllers/AuthController.php',
-        'App\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/app/Controllers/DashboardController.php',
-        'App\\Controllers\\EmployeeController' => __DIR__ . '/../..' . '/app/Controllers/EmployeeController.php',
-        'App\\Controllers\\IncidentsController' => __DIR__ . '/../..' . '/app/Controllers/IncidentsController.php',
-        'App\\Controllers\\PositionController' => __DIR__ . '/../..' . '/app/Controllers/PositionController.php',
-        'App\\Controllers\\SessionController' => __DIR__ . '/../..' . '/app/Controllers/SessionController.php',
-        'App\\Models\\Contracts' => __DIR__ . '/../..' . '/app/Models/Contracts.php',
-        'App\\Models\\Department' => __DIR__ . '/../..' . '/app/Models/Department.php',
-        'App\\Models\\Employee' => __DIR__ . '/../..' . '/app/Models/Employee.php',
-        'App\\Models\\EmployeeProfile' => __DIR__ . '/../..' . '/app/Models/EmployeeProfile.php',
-        'App\\Models\\IncidentType' => __DIR__ . '/../..' . '/app/Models/IncidentType.php',
-        'App\\Models\\Model' => __DIR__ . '/../..' . '/app/Models/Model.php',
-        'App\\Models\\Permission' => __DIR__ . '/../..' . '/app/Models/Permission.php',
-        'App\\Models\\Positions' => __DIR__ . '/../..' . '/app/Models/Positions.php',
-        'App\\Models\\Role' => __DIR__ . '/../..' . '/app/Models/Role.php',
-        'App\\Models\\RolePermission' => __DIR__ . '/../..' . '/app/Models/RolePermission.php',
-        'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
-        'App\\Models\\UserRole' => __DIR__ . '/../..' . '/app/Models/UserRole.php',
-        'App\\Models\\UserSession' => __DIR__ . '/../..' . '/app/Models/UserSession.php',
-        'App\\Services\\DashboardService' => __DIR__ . '/../..' . '/app/Services/DashboardService.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Core\\Auth' => __DIR__ . '/../..' . '/core/Auth.php',
-        'Core\\Cache' => __DIR__ . '/../..' . '/core/Cache.php',
-        'Core\\Database' => __DIR__ . '/../..' . '/core/Database.php',
-        'Core\\Router' => __DIR__ . '/../..' . '/core/Router.php',
+        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

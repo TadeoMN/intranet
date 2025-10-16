@@ -46,6 +46,8 @@
   $router->get('/incidents/list', 'IncidentsController@listIncidents');
   $router->get('/api/incidents/search', 'IncidentsController@searchIncidents');
   $router->get('/api/incident/{id_incident:\d+}', 'IncidentsController@findIncidentById');
+  $router->get('/incidents/export/excel', 'IncidentsController@exportExcel');
+  $router->get('/incidents/export/pdf', 'IncidentsController@exportPdf');
   $router->post('/incidents/store', 'IncidentsController@storeIncident');
 
   $output = $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

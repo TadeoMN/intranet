@@ -1,81 +1,82 @@
 <?php ob_start(); ?>
 
-<div class="container-fluid mt-4">
-  <div class="row mx-0 mb-3 d-flex align-items-center p-0"> <!-- Search and Filter Controls -->
-
-    <div class="py-1 col-sm-12 col-md-4 col-lg-2"> <!-- New Employee Button -->
-      <a href="/employee/create" class="btn btn-success tl-btn-new-employee" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
-        <i class="fa-solid fa-plus"></i> Agregar empleado
-      </a>
+<!-- PAGE HEADER / FILTERS AND ACTIONS -->
+<div class="container-fluid">
+  <div class="row g-2 my-3 align-items-center">
+    <!-- ADD INCIDENT BUTTON -->
+    <div class="col-4 col-xxl-1 order-0 text-center">
+      <div class="form-floating">
+        <button type="button" class="btn btn-success w-100 tl-btn-new-employee" data-bs-toggle="tooltip" data-bs-title="Agregar Empleado" style="min-height: calc(3.8rem + calc(1px * 2)); max-height: calc(3.8rem + calc(1px * 2));">
+          <i class="fa-solid fa-square-plus tl-icon-xl"></i>
+        </button>
+      </div>
     </div>
-
-    <div class="py-1 col-sm-12 col-md-4 col-lg-8"> <!-- Search and Filter Form -->
-      <form method="GET" action="/employees/list" class="row g-2 align-items-center justify-content-center">
-        <div class="form-floating col-auto">
-          <input type="text" class="form-control" aria-label="Nombre o ID de empleado" name="search"
-            value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" aria-describedby="searchButton" placeholder="Buscar empleado: ">
-          <label for="search">Buscar empleado: </label>
-        </div>
-
-        <div class="form-floating col-auto">
-          <select class="form-select text-nowrap" name="status" aria-label="Estado del empleado">
-            <option value="" disabled selected>Estado del empleado</option>
-            <option value="ACTIVO" <?= (isset($_GET['status']) && $_GET['status'] === 'ACTIVO') ? 'selected' : '' ?>>ACTIVO</option>
-            <option value="INACTIVO" <?= (isset($_GET['status']) && $_GET['status'] === 'INACTIVO') ? 'selected' : '' ?>>INACTIVO</option>
-            <option value="SUSPENDIDO" <?= (isset($_GET['status']) && $_GET['status'] === 'SUSPENDIDO') ? 'selected' : '' ?>>SUSPENDIDO</option>
-            <option value="TODOS" <?= (isset($_GET['status']) && $_GET['status'] === 'TODOS') ? 'selected' : '' ?>>TODOS</option>
-          </select>
-          <label for="status">Estado del empleado: </label>
-        </div>
-
-        <div class="form-floating col-auto">
-          <input type="date" name="dateFrom" id="dateFrom" class="form-control" value="<?= htmlspecialchars($_GET['dateFrom'] ?? '') ?>">
-          <label for="dateFrom">Desde:</label>
-        </div>
-
-        <div class="form-floating col-auto">
-          <input type="date" name="dateTo" id="dateTo" class="form-control" value="<?= htmlspecialchars($_GET['dateTo'] ?? '') ?>">
-          <label for="dateTo">Hasta:</label>
-        </div>
-
-        <div class="col-auto">
-          <button type="submit" class="btn btn-sm btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Aplicar filtros">
-            <i class="fa-solid fa-magnifying-glass tl-icon-xl"></i>
-          </button>
-
-          <a href="/employees/list" class="btn btn-sm btn-secondary mx-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Limpiar filtros">
-            <i class="fa-solid fa-rotate tl-icon-xl"></i>
-          </a>
-        </div>
-
-        <input type="hidden" name="page" value="<?= htmlspecialchars($_GET['page'] ?? 1) ?>">
-        <input type="hidden" name="limit" value="<?= htmlspecialchars($_GET['limit'] ?? 10) ?>">
-      </form>
-    </div>
-
-    <div class="py-1 col-sm-12 col-md-4 col-lg-2"> <!-- Pagination and Per Page Selector -->
+    <!-- SEARCH INPUT -->
+    <div class="col-8 col-xl-6 col-xxl-4 order-2 order-xl-3 order-xxl-1">
       <form method="GET" action="/employees/list">
-        <div class="form-floating">
-          <select class="form-select text-nowrap" id="perPage" name="limit" onchange="location.href = '<?= buildUrl() ?>&limit=' + this.value" aria-label="Empleados por página" style="min-width: 190px;">
-            <?php
-            $allowedPages = [5, 10, 20, 50, 100];
-            $currentPerPage = $_GET['limit'] ?? 10;
-            foreach ($allowedPages as $page) {
-              $selected = ($page == $currentPerPage) ? 'selected' : '';
-              echo "<option value=\"$page\" $selected>$page</option>";
-            }
-            ?>
-          </select>
-          <label for="perPage">Empleados por página: </label>
-        </div>
-        <input type="hidden" name="page" value="<?= htmlspecialchars($_GET['page'] ?? 1) ?>">
-        <input type="hidden" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-        <input type="hidden" name="dateFrom" value="<?= htmlspecialchars($_GET['dateFrom'] ?? '') ?>">
-        <input type="hidden" name="dateTo" value="<?= htmlspecialchars($_GET['dateTo'] ?? '') ?>">
+      <div class="form-floating">
+        <input type="text" class="form-control" aria-label="Nombre o ID de empleado" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" aria-describedby="searchButton" placeholder="Buscar empleado:">
+        <label for="search">Buscar empleado: </label>
+      </div>
+    </div>
+    <!-- DATE INPUTS -->
+    <div class="col-8 col-xl-4 col-xxl-3 order-4 order-xl-4 order-xxl-2 d-flex flex-row gap-2">
+      <div class="form-floating w-100">
+        <input type="date" name="dateFrom" id="dateFrom" class="form-control" value="<?= htmlspecialchars($_GET['dateFrom'] ?? '') ?>">
+        <label for="dateFrom">Desde:</label>
+      </div>
+      <div class="form-floating w-100">
+        <input type="date" name="dateTo" id="dateTo" class="form-control" value="<?= htmlspecialchars($_GET['dateTo'] ?? '') ?>">
+        <label for="dateTo">Hasta:</label>
+      </div>
+    </div>
+    <!-- STATUS SELECTOR -->
+    <div class="col-4 col-xxl-1 order-3 order-xxl-3">
+      <div class="form-floating">
+        <select class="form-select text-nowrap" name="status" aria-label="Estado del empleado">
+          <option value="" disabled selected>Estado del empleado</option>
+          <option value="ACTIVO" <?= (isset($_GET['status']) && $_GET['status'] === 'ACTIVO') ? 'selected' : '' ?>>ACTIVO</option>
+          <option value="INACTIVO" <?= (isset($_GET['status']) && $_GET['status'] === 'INACTIVO') ? 'selected' : '' ?>>INACTIVO</option>
+          <option value="SUSPENDIDO" <?= (isset($_GET['status']) && $_GET['status'] === 'SUSPENDIDO') ? 'selected' : '' ?>>SUSPENDIDO</option>
+          <option value="TODOS" <?= (isset($_GET['status']) && $_GET['status'] === 'TODOS') ? 'selected' : '' ?>>TODOS</option>
+        </select>
+        <label for="status">Estado del empleado: </label>
+      </div>
+    </div>
+    <!-- FILTERS BUTTONS -->
+    <div class="col-4 col-xl-2 col-xxl-1 order-5 order-xxl-4 d-flex flex-row gap-2 justify-content-center">
+      <button type="submit" class="btn btn-sm btn-primary w-100" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Aplicar filtros" style="height: calc(3.8rem + calc(1px * 2));">
+        <i class="fa-solid fa-magnifying-glass tl-icon-xl"></i>
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary w-100" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Limpiar filtros" onclick="location.href = '/employees/list'" style="height: calc(3.8rem + calc(1px * 2));">
+        <i class="fa-solid fa-broom-wide tl-icon-xl"></i>
+      </button>
       </form>
+    </div>
+    <!-- RECORDS PER PAGE SELECTOR -->
+    <div class="col-8 col-xxl-2 order-1 order-xl-2 order-xxl-5">
+      <div class="form-floating">
+        <select class="form-select text-nowrap" id="perPage" name="limit" onchange="location.href = '<?= buildUrl() ?>&limit=' + this.value" aria-label="Empleados por página">
+          <?php
+          $allowedPages = [5, 10, 20, 50, 100];
+          $currentPerPage = $_GET['limit'] ?? 10;
+          foreach ($allowedPages as $page) {
+            $selected = ($page == $currentPerPage) ? 'selected' : '';
+            echo "<option value=\"$page\" $selected>$page</option>";
+          }
+          ?>
+        </select>
+        <label for="perPage">Incidencias por página: </label>
+      </div>
+
+      <input type="hidden" name="page" value="<?= htmlspecialchars($_GET['page'] ?? 1) ?>">
+      <input type="hidden" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+      <input type="hidden" name="dateFrom" value="<?= htmlspecialchars($_GET['dateFrom'] ?? '') ?>">
+      <input type="hidden" name="dateTo" value="<?= htmlspecialchars($_GET['dateTo'] ?? '') ?>">
     </div>
   </div>
 </div>
+<!-- END PAGE HEADER / FILTERS AND ACTIONS -->
 
 <div class="container-fluid table-responsive">
   <table id="" class="table table-hover table-bordered">
@@ -284,7 +285,7 @@
       <!-- Pagination links / Enlaces de paginación -->
       <div class="col-12 col-md-6">
         <nav aria-label="Employee pagination">
-          <ul class="pagination tl-pagination-md justify-content-end m-0">
+          <ul class="pagination tl-pagination-md justify-content-center justify-content-md-end m-0">
             <!-- First page / Página inicial -->
             <?php if ($pagination['current_page'] > 1): ?>
               <li class="page-item">
@@ -363,5 +364,4 @@
   <?php endif; ?>
 </div>
 
-<?php $content = ob_get_clean();
-include __DIR__ . '/../layouts/layout-main.php'; ?>
+<?php $content = ob_get_clean(); include __DIR__ . '/../layouts/layout-main.php'; ?>

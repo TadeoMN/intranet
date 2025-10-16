@@ -266,13 +266,14 @@ class Employee extends Model {
         $sql =
             '   SELECT *
                 FROM employee
-                WHERE LOWER(name_employee) LIKE :search
+                WHERE status_employee = "ACTIVO"
+                    AND LOWER(name_employee) LIKE :search
                     OR code_employee LIKE :search2
                 ORDER BY code_employee ASC
                 LIMIT 10';
         $bindings = [
             ':search' => $search,
-            ':search2' => $search
+            ':search2' => $search,
         ];
         $st = $pdo->prepare($sql);
         $st->execute($bindings);

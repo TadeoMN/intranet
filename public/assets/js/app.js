@@ -11,6 +11,46 @@ document.querySelectorAll('.dropdown-menu [data-bs-toggle="dropdown"]').forEach(
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+  const viewAccountButton = document.getElementById('viewAccountButton');
+  const account_number_employee = document.getElementById('account_number_employee');
+  if (!viewAccountButton || !account_number_employee) return console.error('View account button or account number input not found.');
+
+  const fullAccountNumber = viewAccountButton.dataset.full;
+  if (!fullAccountNumber) return console.error('Full account number not provided in data attribute.');
+  const maskedAccountNumber = fullAccountNumber.replace(/.(?=.{4})/g,'•');
+
+  viewAccountButton.addEventListener('click', () => {
+    const showingFullNumber = viewAccountButton.dataset.shown === '1';
+    if (showingFullNumber) {
+      account_number_employee.value = maskedAccountNumber;
+      viewAccountButton.innerHTML = '<i class="fa-solid fa-eye tl-icon-xl"></i> ';
+      viewAccountButton.setAttribute('data-bs-original-title', 'Ver Número Completo');
+      viewAccountButton.dataset.shown = '0';
+    } else {
+      account_number_employee.value = fullAccountNumber;
+      viewAccountButton.innerHTML = '<i class="fa-solid fa-eye-slash tl-icon-xl"></i> ';
+      viewAccountButton.setAttribute('data-bs-original-title', 'Ocultar Número Completo');
+      viewAccountButton.dataset.shown = '1';
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const backToTopButton = document.getElementById('backToTopButton');
+  const scrollableContainer = document.getElementById('scrollableContainer');
+
+  if (!backToTopButton) return console.error('Back to top button not found.');
+  if (!scrollableContainer) return console.error('Scrollable container not found.');
+
+  backToTopButton.addEventListener('click', function() {
+    scrollableContainer.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
   const modalElement = new bootstrap.Modal(document.getElementById('createEmployeeModal'));
   const formElement = document.getElementById('createEmployeeForm');
   const modalTitle = document.getElementById('modalTitle');
@@ -32,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     formElement.reset();
     hiddenIdInput.value = '';
     id_department_fk.dispatchEvent(new Event('change'));
+    modalElement.show();
   });
 
   btnEditEmployee.forEach(button => {
@@ -72,46 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
       modalElement.show();
 
       id_department_fk.dispatchEvent(new Event('change'));
-    });
-  });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  const viewAccountButton = document.getElementById('viewAccountButton');
-  const account_number_employee = document.getElementById('account_number_employee');
-  if (!viewAccountButton || !account_number_employee) return console.error('View account button or account number input not found.');
-
-  const fullAccountNumber = viewAccountButton.dataset.full;
-  if (!fullAccountNumber) return console.error('Full account number not provided in data attribute.');
-  const maskedAccountNumber = fullAccountNumber.replace(/.(?=.{4})/g,'•');
-
-  viewAccountButton.addEventListener('click', () => {
-    const showingFullNumber = viewAccountButton.dataset.shown === '1';
-    if (showingFullNumber) {
-      account_number_employee.value = maskedAccountNumber;
-      viewAccountButton.innerHTML = '<i class="fa-solid fa-eye tl-icon-xl"></i> ';
-      viewAccountButton.setAttribute('data-bs-original-title', 'Ver Número Completo');
-      viewAccountButton.dataset.shown = '0';
-    } else {
-      account_number_employee.value = fullAccountNumber;
-      viewAccountButton.innerHTML = '<i class="fa-solid fa-eye-slash tl-icon-xl"></i> ';
-      viewAccountButton.setAttribute('data-bs-original-title', 'Ocultar Número Completo');
-      viewAccountButton.dataset.shown = '1';
-    }
-  });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  const backToTopButton = document.getElementById('backToTopButton');
-  const scrollableContainer = document.getElementById('scrollableContainer');
-
-  if (!backToTopButton) return console.error('Back to top button not found.');
-  if (!scrollableContainer) return console.error('Scrollable container not found.');
-
-  backToTopButton.addEventListener('click', function() {
-    scrollableContainer.scrollTo({
-      top: 0,
-      behavior: 'smooth'
     });
   });
 });

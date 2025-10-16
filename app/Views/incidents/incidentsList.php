@@ -1,4 +1,23 @@
 <?php ob_start(); ?>
+<?php
+  $exportFilters = [
+    'search' => $_GET['search'] ?? null,
+    'dateFrom' => $_GET['dateFrom'] ?? null,
+    'dateTo' => $_GET['dateTo'] ?? null,
+    'sort' => $_GET['sort'] ?? null,
+    'order' => $_GET['order'] ?? null,
+    'status' => $_GET['status'] ?? null,
+  ];
+
+  $exportFilters = array_filter(
+    $exportFilters,
+    fn($value) => $value !== null && $value !== ''
+  );
+
+  $exportQuery = http_build_query($exportFilters);
+  $exportExcelUrl = '/incidents/export/excel' . ($exportQuery ? '?' . $exportQuery : '');
+  $exportPdfUrl = '/incidents/export/pdf' . ($exportQuery ? '?' . $exportQuery : '');
+?>
 
 <!-- PAGE HEADER / FILTERS AND ACTIONS -->
 <div class="container-fluid">
@@ -6,7 +25,7 @@
     <!-- ADD INCIDENT BUTTON -->
     <div class="col-2 col-xxl-1 order-0 text-center">
       <div class="form-floating">
-        <button href="#" class="btn btn-success tl-btn-incident w-100" data-bs-toggle="tooltip" data-bs-title="Agregar Incidencia" style="min-height: calc(3.8rem + calc(1px * 2)); max-height: calc(3.8rem + calc(1px * 2));">
+        <button class="btn btn-success w-100 tl-btn-incident tl-btn-export" data-bs-toggle="tooltip" data-bs-title="Agregar Incidencia">
           <i class="fa-solid fa-square-plus tl-icon-xl"></i>
         </button>
       </div>
@@ -32,18 +51,17 @@
     </div>
     <!-- FILTERS BUTTONS -->
     <div class="col-4 col-xl-2 col-xxl-1 order-5 order-xxl-3 d-flex flex-row gap-2 justify-content-center">
-      <button type="submit" class="btn btn-sm btn-primary w-100" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Aplicar filtros" style="height: calc(3.8rem + calc(1px * 2));">
+      <button type="submit" class="btn btn-sm btn-primary w-100 tl-btn-export" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Aplicar filtros">
         <i class="fa-solid fa-magnifying-glass tl-icon-xl"></i>
       </button>
-      <button type="button" class="btn btn-sm btn-secondary w-100" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Limpiar filtros" onclick="location.href = '/incidents/list'" style="height: calc(3.8rem + calc(1px * 2));">
+      <button type="button" class="btn btn-sm btn-secondary w-100 tl-btn-export" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Limpiar filtros" onclick="location.href = '/incidents/list'">
         <i class="fa-solid fa-broom-wide tl-icon-xl"></i>
       </button>
-      </form>
     </div>
     <!-- RECORDS PER PAGE SELECTOR -->
     <div class="col-6 col-xxl-2 order-1 order-xl-2 order-xxl-4">
       <div class="form-floating">
-        <select class="form-select text-nowrap" id="perPage" name="limit" onchange="location.href = '<?= buildUrl() ?>&limit=' + this.value" aria-label="Empleados por página">
+        <select class="form-select text-nowrap" id="perPage" name="limit" onchange="const form = this.form; if (form.page) { form.page.value = 1; } form.submit();" aria-label="Empleados por página">
           <?php
           $allowedPages = [5, 10, 20, 50, 100];
           $currentPerPage = $_GET['limit'] ?? 10;
@@ -57,21 +75,21 @@
       </div>
 
       <input type="hidden" name="page" value="<?= htmlspecialchars($_GET['page'] ?? 1) ?>">
-      <input type="hidden" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-      <input type="hidden" name="dateFrom" value="<?= htmlspecialchars($_GET['dateFrom'] ?? '') ?>">
-      <input type="hidden" name="dateTo" value="<?= htmlspecialchars($_GET['dateTo'] ?? '') ?>">
     </div>
+    </form>
     <!-- EXPORT BUTTONS -->
-    <div class="col-4 col-xxl-1 order-2 order-xxl-5 d-flex flex-row gap-2 justify-content-center">
-      <button type="button" class="btn btn-sm btn-success w-100" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Decargar Excel" style="height: calc(3.8rem + calc(1px * 2));">
+    <div class="col-4 col-xxl-1 order-2 order-xxl-5 d-flex flex-row gap-2 justify-content-center align-content-center">
+      <a href="<?= htmlspecialchars($exportExcelUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn btn-sm btn-success w-100 tl-btn-export d-flex align-items-center justify-content-center" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Descargar Excel">
         <i class="fa-solid fa-file-excel tl-icon-xl"></i>
-      </button>
-      <button type="button" class="btn btn-sm btn-danger w-100" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Decargar PDF" style="height: calc(3.8rem + calc(1px * 2));">
+      </a>
+      <a href="<?= htmlspecialchars($exportPdfUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn btn-sm btn-danger w-100 tl-btn-export d-flex align-items-center justify-content-center" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Descargar PDF">
         <i class="fa-solid fa-file-pdf tl-icon-xl"></i>
-      </button>
+      </a>
     </div>
   </div>
 </div>
+<!-- END PAGE HEADER / FILTERS AND ACTIONS -->
+ 
 <!-- INCIDENTS TABLE -->
 <div class="container-fluid table-responsive">
   <table class="table table-hover table-bordered">
@@ -150,6 +168,8 @@
     </tbody>
   </table>
 </div>
+<!-- END INCIDENTS TABLE -->
+
 <!-- PAGINATION CONTROLS -->
 <div class="container-fluid">
   <!-- Show number of records / Mostrar número de registros -->
@@ -253,5 +273,5 @@
     </div>
   <?php endif; ?>
 </div>
-
+<!-- END PAGINATION CONTROLS -->
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/layout-main.php'; ?>

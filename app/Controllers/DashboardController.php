@@ -16,7 +16,6 @@ class DashboardController {
 
         extract($dashboardData);
 
-        return view('dashboard/dashboard', compact('users', 'roles', 'permissions', 'active', 'history', 'session',
-            'departments', 'positionsByDepartment'));
+        return view('dashboard/dashboard', compact('users', 'roles', 'permissions', 'active', 'history', 'session', 'departments', 'positionsByDepartment'));
     }
 }

@@ -31,13 +31,14 @@
 
 <body>
     <!-- Header with navigation and branding -->
-    <header class="bg-dark text-white py-2 sticky-top">
+    <header class="bg-dark text-white sticky-top py-2">
         <nav class="navbar navbar-dark bg-dark sticky-top">
             <div class="container-fluid justify-content-start">
-                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+                <button type="button" class="navbar-toggler" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <a class="navbar-brand mx-3" href="/dashboard">Top Label</a>
+                <!-- Offcanvas menu -->
                 <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
                     <!-- Offcanvas header -->
                     <div class="offcanvas-header">
@@ -88,6 +89,7 @@
                                 </ul>
                             </li>
                             <!-- End User/Profile Panel -->
+
                             <!-- Admin Panel -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -130,6 +132,7 @@
                                 </ul>
                             </li>
                             <!-- End Admin Panel -->
+
                             <!-- HR Panel -->
                             <li class="nav-item dropdown" data-bs-auto-close="outside">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -177,7 +180,9 @@
                                     </li>
                                     <!-- End New Records -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Catalogs -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -213,7 +218,9 @@
                                     </li>
                                     <!-- End Catalogs -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Reports -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -243,7 +250,9 @@
                                     </li>
                                     <!-- End Reports -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Authorizations -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -261,7 +270,9 @@
                                     </li>
                                     <!-- End Authorizations -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Settings -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -287,21 +298,22 @@
                                 </ul>
                             </li>
                             <!-- End HR Panel -->
+
                             <!-- Quality Panel -->
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Panel de Calidad
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink1">
                                     <!-- New Records -->
                                     <li>
-                                        <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
                                             Nuevos Registros
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-dark">
                                             <li>
-                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#incidentsModal">
+                                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#incidentsModal">
                                                     <i class="fa-solid fa-file-plus me-3 tl-icon"></i>
                                                     Alta de Incidencia
                                                 </a>
@@ -316,7 +328,9 @@
                                     </li>
                                     <!-- End New Records -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Catalogs -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -340,7 +354,9 @@
                                     </li>
                                     <!-- End Catalogs -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Reports -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -364,7 +380,9 @@
                                     </li>
                                     <!-- End Reports -->
                                     <!-- Separator -->
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <!-- Settings -->
                                     <li>
                                         <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -388,6 +406,7 @@
                     </div>
                     <!-- End Offcanvas body -->
                 </div>
+                <!-- End Offcanvas menu -->
             </div>
         </nav>
     </header>
@@ -437,4 +456,5 @@
         });
     </script>
 </body>
+
 </html>

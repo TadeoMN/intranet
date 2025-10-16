@@ -55,4 +55,18 @@ class User extends Model {
         $st = $pdo->query($sql);
         return $st->fetchAll() ?: [];
     }
+
+    public static function findUserWithEmployee(int $id): ?array {
+        $pdo = \Core\Database::pdo();
+        $sql = 
+            '   SELECT users.*, employee.*
+                FROM users
+                INNER JOIN employee ON users.id_employee_fk = employee.id_employee
+                WHERE users.id_user = :id_user
+                LIMIT 1';
+        $st=$pdo->prepare($sql);
+        $st->bindParam(':id_user', $id, \PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetch() ?: null;
+    }
 }

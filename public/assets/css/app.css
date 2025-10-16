@@ -4,7 +4,7 @@
     font-weight: normal;
 }
 
-/* CSS ROOT Variables for TopLabel */
+/* CSS ROOT Variables for Top Label */
 :root {
   --tl-primary-color: #72a201;
   --tl-primary-color-hover: #5f8a01;
@@ -86,7 +86,8 @@ hr {
   * This file contains the overrides for Bootstrap styles.
   * It includes custom styles for buttons, forms, and other components.
   */
-.form-floating>.form-control-plaintext:focus, .form-floating>.form-control-plaintext:not(:placeholder-shown), .form-floating>.form-control:focus, .form-floating>.form-control:not(:placeholder-shown) {
+.form-floating>.form-control-plaintext:focus, .form-floating>.form-control-plaintext:not(:placeholder-shown),
+.form-floating>.form-control:focus, .form-floating>.form-control:not(:placeholder-shown) {
   padding-top: 1.825rem;
 }
 .form-floating>.form-select {
@@ -210,6 +211,11 @@ table thead th {
   }
 }
 
+.tl-btn-export {
+  min-height: calc(3.8rem + calc(1px * 2));
+  max-height: calc(3.8rem + calc(1px * 2));
+}
+
 .btn-action {
   display: flex!important;
   align-items: center!important;
@@ -228,5 +234,4 @@ table thead th {
   --bs-btn-disabled-color: var(--tl-white-color);
   --bs-btn-disabled-bg: var(--tl-tertiary-color);
   --bs-btn-disabled-border-color: var(--tl-tertiary-color);
-
 }

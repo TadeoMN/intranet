@@ -1,8 +1,18 @@
 $argon2id$v=19$m=65536,t=4,p=1$WE54bE5GQk56QkdRUUhYUg$kdUDQw0KCQV9Yisf5w+nbALwBb9vaVsbHq7Va+zDR30 dkzo5713
 $argon2id$v=19$m=65536,t=4,p=1$MHQxVVVQaFo4S2RsNTJHbw$lOLnRxIbRfFOUPMT5fy2pNjedG2sjkLLHCMVNkW4Ink 5713
+$argon2id$v=19$m=65536,t=4,p=1$QkQxdFc1Nkc4UkpOY0VSSw$U+kHw6rnmrrsf+1FoFbZ4vlFDfcYjV6uH/FGlGFlBvA 1234
+$argon2id$v=19$m=65536,t=4,p=1$OXFta0ZLcmZVYW5JQWJodQ$ShURFlBFWp+5bNiURB7coRbbKzRA8JpIci6XHFFB+eU 1907
+
+$argon2id$v=19$m=65536,t=4,p=1$dmttWHlZNzZqRmM1OGtYcg$TKzLwnkVsPC4a1xFoJhloU0FBKJiXR6Mh5v/jqTjl/0 calidad3
+$argon2id$v=19$m=65536,t=4,p=1$NndjY3U3YjJCaGY5a0w2Zg$TCk41Rl95gk0jbY0K4Zcl5t5oXyDPLgPX/eV6VqrNvg 1414
+$argon2id$v=19$m=65536,t=4,p=1$T0IwbmlnSkhyb1FYM09sbg$AwXL/LBL04JLLq8wuPPdroc33oJSVlMYKsCPUoeTjU4 0109
+
+
 
 prueba@toplabel.com.mx
 
-php -r 'echo password_hash("", PASSWORD_ARGON2ID) . PHP_EOL;'
+php -r 'echo password_hash("0109", PASSWORD_ARGON2ID) . PHP_EOL;'
 
-AXEL LEONARDO TAMEZ SUAREZ
+
+jorge.hernandez@toplabel.com.mx
+YCStEOg+7U{{

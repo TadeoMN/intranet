@@ -55,7 +55,17 @@ class EmployeeController {
         $employeesData = Employee::filterPaginated($search, $dateFrom, $dateTo, $limit, $offset, $sort, $order, $status);
         $employees = $employeesData['employees'];
         $total = $employeesData['total'];
-        $totalPages = ceil($total / $limit);
+
+        $totalPages = max(1, (int)ceil($total / $limit));
+        if ($page > $totalPages) {
+            $page   = $totalPages;                // clamp
+            $offset = ($page - 1) * $limit;       // recalcular offset
+            // 3) Reconsultar con el nuevo offset
+            $employeesData = Employee::filterPaginated($search, $dateFrom, $dateTo, $limit, $offset, $sort, $order, $status);
+            $employees = $employeesData['employees'];
+            $total     = (int)$employeesData['total'];
+            // (totalPages ya es correcto)
+        }
 
         $pagination = [
             'current_page' => $page,

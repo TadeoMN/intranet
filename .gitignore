@@ -29,3 +29,9 @@ logs/
 # Backup files / Archivos de respaldo
 *.bak
 *.old
+
+# Config Files / Archivos de Configuración
+config/intranet_tl_db.sql
+config/proof.sql
+config/RepoteIncidenciasFormato.pdf
+config/tl-db.sql

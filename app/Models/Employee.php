@@ -161,31 +161,6 @@ class Employee extends Model {
         return ['employees' => $employees, 'total' => $total];
     }
     /**
-     * Delete an employee by ID.
-     * @param int $id_employee Employee ID.
-     * @return bool True if the employee was deleted, false otherwise.
-     * @throws \Exception If there is an error during the deletion.
-     * @description This function marks an employee as inactive by updating their status and the associated user status.
-     * It returns true if the deletion was successful, otherwise false.
-     */
-    public static function deleteById(int $id_employee): bool {
-        $pdo = \Core\Database::pdo();
-        $sql = 
-            '   UPDATE employee
-                INNER JOIN users ON users.id_employee_fk = employee.id_employee
-                SET
-                    status_employee = "INACTIVO",
-                    status_user = "INACTIVO"
-                WHERE id_employee = :id_employee';
-        $st = $pdo->prepare($sql);
-        $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
-        $st->execute();
-        if ($st->rowCount() === 0) {
-            throw new \Exception('Error deleting employee');
-        }
-        return $st->rowCount() > 0;
-    }
-    /**
      * Create a new employee.
      * @param array $data Employee data.
      * @return int The ID of the newly created employee.
@@ -243,6 +218,31 @@ class Employee extends Model {
         $st->execute();
         if ($st->rowCount() === 0) {
             throw new \Exception('Error updating employee');
+        }
+        return $st->rowCount() > 0;
+    }
+    /**
+     * Delete an employee by ID.
+     * @param int $id_employee Employee ID.
+     * @return bool True if the employee was deleted, false otherwise.
+     * @throws \Exception If there is an error during the deletion.
+     * @description This function marks an employee as inactive by updating their status and the associated user status.
+     * It returns true if the deletion was successful, otherwise false.
+     */
+    public static function deleteById(int $id_employee): bool {
+        $pdo = \Core\Database::pdo();
+        $sql = 
+            '   UPDATE employee
+                INNER JOIN users ON users.id_employee_fk = employee.id_employee
+                SET
+                    status_employee = "INACTIVO",
+                    status_user = "INACTIVO"
+                WHERE id_employee = :id_employee';
+        $st = $pdo->prepare($sql);
+        $st->bindParam(':id_employee', $id_employee, \PDO::PARAM_INT);
+        $st->execute();
+        if ($st->rowCount() === 0) {
+            throw new \Exception('Error deleting employee');
         }
         return $st->rowCount() > 0;
     }

@@ -128,7 +128,7 @@ class EmployeeController {
             } elseif ($e->errorInfo[1] === 1452) { // Foreign key constraint fails
                 flash('error', 'Error al crear empleado', 'El puesto seleccionado no es válido o no existe.');
             } elseif ($e->errorInfo[1] === 1364) { // Incorrect datetime value
-                flash('error', 'Error al crear empleado', 'La fecha de contratación es incorrecta o está vacía.');
+                flash('error', 'Error al crear empleado', 'La fecha de contratación no es válida o está vacía.');
             } else {
                 flash('error', 'Error al crear empleado', 'Ocurrió un error inesperado: ' . $e->getMessage());
             }
@@ -277,7 +277,15 @@ class EmployeeController {
         }
         return view('hr/employeeProfile', compact('employee', 'profile', 'contract', 'departments', 'positionsByDepartment'));
     }
-    // GET /api/employees/search?q=algo[&debug=1]
+    /**
+     * Search for employees by name or other criteria.
+     * @return void Outputs JSON response.
+     * @throws \Exception If there is an error during the search.
+     * @route /api/employees/search
+     * @method GET
+     * @description This function handles searching for employees based on a query parameter.
+     *              It returns a JSON response with the search results or an error message if applicable.
+     */
     public function searchEmployee(): void {
         header('Content-Type: application/json; charset=utf-8');
         $q = isset($_GET['q']) ? trim((string)$_GET['q']) : (isset($_GET['term']) ? trim((string)$_GET['term']) : '');

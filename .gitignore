@@ -1,0 +1,31 @@
+# Cache files / Archivos de caché
+storage/cache/*.cache
+
+# Vendor directory / Directorio vendor
+/vendor/
+
+# Environment files / Archivos de entorno
+.env
+.env.local
+
+# IDE files / Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files / Archivos del SO
+.DS_Store
+Thumbs.db
+
+# Log files / Archivos de log
+*.log
+logs/
+
+# Temporary files / Archivos temporales
+/tmp/
+*.tmp
+
+# Backup files / Archivos de respaldo
+*.bak
+*.old
